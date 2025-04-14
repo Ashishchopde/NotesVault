@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>About - NotesVault</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Starfield -->
+  <canvas id="starfield"></canvas>
+
+  <!-- Blob -->
+  <div class="blob-bg">
+    <div class="blob"></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/excited.gif" alt="NotesVault Logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin"><i class="fas fa-user-shield"></i> Admin</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/about"><i class="fas fa-info-circle"></i> About</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="content-container">
+          <h2 class="text-center mb-4">About NotesVault</h2>
+          <div class="card mb-4">
+            <div class="card-body">
+              <h5 class="card-title">Our Mission</h5>
+              <p class="card-text">
+                NotesVault is dedicated to providing a secure and efficient platform for managing and accessing educational documents. 
+                Our mission is to make learning materials easily accessible while maintaining the highest standards of security and organization.
+              </p>
+            </div>
+          </div>
+          <div class="card mb-4">
+            <div class="card-body">
+              <h5 class="card-title">Features</h5>
+              <ul class="list-unstyled">
+                <li class="mb-3">
+                  <i class="fas fa-shield-alt text-primary mr-2"></i>
+                  Secure document storage and access
+                </li>
+                <li class="mb-3">
+                  <i class="fas fa-search text-primary mr-2"></i>
+                  Easy document search and filtering
+                </li>
+                <li class="mb-3">
+                  <i class="fas fa-user-shield text-primary mr-2"></i>
+                  Admin-controlled document management
+                </li>
+                <li class="mb-3">
+                  <i class="fas fa-file-word text-primary mr-2"></i>
+                  Support for DOCX file format
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Contact Us</h5>
+              <p class="card-text">
+                For any queries or support, please reach out to us at:
+                <br>
+                <i class="fas fa-envelope mr-2"></i> support@notesvault.com
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <!-- Starfield Animation Script -->
+  <script>
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let stars = Array.from({ length: 100 }).map(() => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5 + 0.5,
+      dx: Math.random() * 0.5 + 0.2
+    }));
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = 'white';
+      stars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+        ctx.fill();
+        star.x -= star.dx;
+        if (star.x < 0) {
+          star.x = canvas.width;
+          star.y = Math.random() * canvas.height;
+        }
+      });
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html> 
