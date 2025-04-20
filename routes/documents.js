@@ -1,15 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const multer  = require('multer');
+const multer = require('multer');
 const path = require('path');
 const mammoth = require('mammoth');
 const Document = require('../models/document');
 const fs = require('fs');
 
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // Configure Multer Storage
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    cb(null, 'uploads/');
+    cb(null, uploadsDir);
   },
   filename: function(req, file, cb) {
     // Use Date.now() to get unique file names
@@ -44,12 +50,13 @@ router.post('/upload', upload.single('docfile'), async (req, res) => {
     const doc = new Document({
       title: title || req.file.originalname,
       originalName: req.file.originalname,
-      filePath: req.file.path.replace(/\\/g, '/'), // Convert backslashes to forward slashes
+      filePath: path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/'),
       fileType: path.extname(req.file.originalname).toLowerCase()
     });
     await doc.save();
     res.redirect('/');
   } catch (err) {
+    console.error('Upload error:', err);
     res.status(500).send('Error uploading document.');
   }
 });
@@ -92,9 +99,9 @@ router.get('/document/:id', async (req, res) => {
       console.log('File path:', doc.filePath);
       console.log('File type:', doc.fileType);
 
-      // Fix file path for Windows
-      const filePath = path.resolve(doc.filePath.replace(/\//g, path.sep));
-      console.log('Resolved file path:', filePath);
+      // Get absolute file path
+      const filePath = path.join(__dirname, '..', doc.filePath);
+      console.log('Absolute file path:', filePath);
 
       // Check if file exists
       if (!fs.existsSync(filePath)) {

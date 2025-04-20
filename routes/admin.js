@@ -5,6 +5,12 @@ const path = require('path');
 const fs = require('fs');
 const Document = require('../models/document');
 
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // Middleware to check if user is authenticated
 const isAuthenticated = (req, res, next) => {
   if (req.session.admin) {
@@ -17,7 +23,7 @@ const isAuthenticated = (req, res, next) => {
 // Configure Multer Storage
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    cb(null, 'uploads/');
+    cb(null, uploadsDir);
   },
   filename: function(req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -77,12 +83,13 @@ router.post('/admin/upload', isAuthenticated, upload.single('docfile'), async (r
     const doc = new Document({
       title: title || req.file.originalname,
       originalName: req.file.originalname,
-      filePath: req.file.path.replace(/\\/g, '/'),
+      filePath: path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/'),
       fileType: path.extname(req.file.originalname).toLowerCase()
     });
     await doc.save();
     res.redirect('/admin/dashboard');
   } catch (err) {
+    console.error('Upload error:', err);
     res.status(500).send('Error uploading document.');
   }
 });
@@ -95,9 +102,12 @@ router.delete('/admin/document/:id', isAuthenticated, async (req, res) => {
       return res.status(404).send('Document not found.');
     }
 
+    // Get absolute file path
+    const filePath = path.join(__dirname, '..', doc.filePath);
+    
     // Delete the file from the uploads directory
-    if (fs.existsSync(doc.filePath)) {
-      fs.unlinkSync(doc.filePath);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
     }
 
     // Delete the document from the database
