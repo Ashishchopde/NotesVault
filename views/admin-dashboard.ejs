@@ -21,7 +21,8 @@
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
       <a class="navbar-brand" href="/">
-        <img src="/excited.gif" alt="NotesVault Logo">
+        <img src="/rgpv-notes.png" alt="NotesVault Logo">
+        <span class="brand-text">NotesVault</span>
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
@@ -45,46 +46,255 @@
     </div>
   </nav>
 
-  <div class="container mt-5">
-    <div class="admin-form">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Document Management</h2>
-        <a href="/admin/upload" class="btn btn-primary">
-          <i class="fas fa-upload mr-2"></i> Upload New Document
-        </a>
-      </div>
+  <div class="main-content">
+    <div class="container mt-5">
+      <div class="admin-form">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="mb-0">Document Management</h2>
+          <a href="/admin/upload" class="btn btn-primary">
+            <i class="fas fa-upload mr-2"></i> Upload New Document
+          </a>
+        </div>
 
-      <div class="search-container w-100 mb-4">
-        <input type="text" class="search-input w-100" id="searchInput" placeholder="Search documents...">
-        <i class="fas fa-search search-icon"></i>
-      </div>
+        <div class="search-container w-100 mb-4">
+          <input type="text" class="search-input w-100" id="searchInput" placeholder="Search documents...">
+          <i class="fas fa-search search-icon"></i>
+        </div>
 
-      <div class="row" id="documentsContainer">
-        <% documents.forEach(function(doc) { %>
-          <div class="col-md-4 document-card">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title"><%= doc.title.replace('.docx', '') %></h5>
-                <p class="card-text">Uploaded on: <%= doc.uploadedAt.toDateString() %></p>
-                <div class="btn-group w-100">
-                  <a href="/document/<%= doc._id %>" class="btn btn-secondary">
-                    <i class="fas fa-eye"></i> View
-                  </a>
-                  <button class="btn btn-danger delete-btn" data-id="<%= doc._id %>">
-                    <i class="fas fa-trash-alt"></i> Delete
-                  </button>
+        <div class="row" id="documentsContainer">
+          <% documents.forEach(function(doc) { %>
+            <div class="col-md-4 document-card">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title"><%= doc.title.replace('.docx', '') %></h5>
+                  <p class="card-text">Uploaded on: <%= doc.uploadedAt.toDateString() %></p>
+                  <div class="btn-group w-100">
+                    <a href="/document/<%= doc._id %>" class="btn btn-secondary">
+                      <i class="fas fa-eye"></i> View
+                    </a>
+                    <button class="btn btn-danger delete-btn" data-id="<%= doc._id %>">
+                      <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        <% }) %>
+          <% }) %>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Footer -->
+  <footer class="footer mt-5 py-3">
+    <div class="container text-center">
+      <p class="mb-0">
+        <span class="text-white-50">Built with <i class="fas fa-heart text-danger"></i> by NotesVault Team</span>
+        <br>
+        <span class="text-white-50">&copy; <%= new Date().getFullYear() %> NotesVault. All rights reserved.</span>
+      </p>
+    </div>
+  </footer>
+
+  <style>
+    /* Background Styles */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background: #000000;
+      overflow-x: hidden;
+      position: relative;
+      color: white;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Main content wrapper */
+    .main-content {
+      flex: 1 0 auto;
+      padding-bottom: 60px; /* Add padding to prevent footer overlap */
+    }
+
+    /* Card styles */
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      color: white;
+      height: 100%; /* Make all cards same height */
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Add responsive spacing between cards */
+    .document-card {
+      margin-bottom: 30px; /* Increased spacing between cards */
+    }
+
+    @media (max-width: 768px) {
+      .document-card {
+        margin-bottom: 40px; /* Even more spacing on mobile */
+      }
+    }
+
+    .card-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1; /* Make card body take remaining space */
+    }
+
+    .card-title {
+      color: white;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* Limit to 2 lines */
+      -webkit-box-orient: vertical;
+      min-height: 48px; /* Fixed height for title */
+    }
+
+    .card-text {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .btn-group {
+      margin-top: auto; /* Push buttons to bottom */
+    }
+
+    .btn-secondary, .btn-danger {
+      border: none;
+      border-radius: 25px;
+      padding: 8px 20px;
+      transition: all 0.3s ease;
+      color: white;
+      flex: 1; /* Make buttons take equal space */
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(45deg, #6c5ce7, #a29bfe);
+    }
+
+    .btn-danger {
+      background: linear-gradient(45deg, #ff4757, #ff6b81);
+    }
+
+    .btn-secondary:hover, .btn-danger:hover {
+      transform: scale(1.05);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+    }
+
+    .btn-danger:hover {
+      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+    }
+
+    /* Search bar styles */
+    .search-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 8px 20px;
+      color: white;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      color: white;
+    }
+
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Footer Styles */
+    .footer {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 1000;
+      margin-top: auto;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    .footer p {
+      font-size: 0.9rem;
+    }
+
+    .footer .fa-heart {
+      animation: heartbeat 1.5s infinite;
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      14% { transform: scale(1.3); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.3); }
+      70% { transform: scale(1); }
+    }
+
+    /* Navbar brand styles */
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      flex-direction: row-reverse; /* Reverse the order of elements */
+    }
+
+    .navbar-brand img {
+      height: 40px;
+      width: auto;
+      margin-right: 0; /* Remove right margin */
+      margin-left: 0; /* Remove left margin */
+    }
+
+    .brand-text {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      letter-spacing: 1px;
+    }
+  </style>
+
   <!-- Bootstrap JS and dependencies -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
   <!-- Starfield Animation Script -->
@@ -135,20 +345,29 @@
     });
 
     // Delete functionality
-    $('.delete-btn').click(function() {
-      const docId = $(this).data('id');
-      if (confirm('Are you sure you want to delete this document?')) {
-        $.ajax({
-          url: `/admin/document/${docId}`,
-          type: 'DELETE',
-          success: function() {
-            location.reload();
-          },
-          error: function() {
+    document.querySelectorAll('.delete-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const docId = this.getAttribute('data-id');
+        if (confirm('Are you sure you want to delete this document?')) {
+          fetch(`/document/${docId}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(response => {
+            if (response.ok) {
+              location.reload();
+            } else {
+              alert('Error deleting document');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
             alert('Error deleting document');
-          }
-        });
-      }
+          });
+        }
+      });
     });
 
     // Handle window resize

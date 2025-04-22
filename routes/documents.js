@@ -5,6 +5,7 @@ const path = require('path');
 const mammoth = require('mammoth');
 const Document = require('../models/document');
 const fs = require('fs');
+const docxPdf = require('docx-pdf');
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, '..', 'uploads');
@@ -29,7 +30,12 @@ const upload = multer({ storage });
 router.get('/', async (req, res) => {
   try {
     const docs = await Document.find().sort({ uploadedAt: -1 });
-    res.render('index', { documents: docs });
+    // Add filename to each document
+    const documents = docs.map(doc => ({
+      ...doc.toObject(),
+      filename: doc.filePath.split('/').pop() // Get the filename from the path
+    }));
+    res.render('index', { documents });
   } catch (err) {
     res.status(500).send('Error retrieving documents');
   }
@@ -83,7 +89,20 @@ router.delete('/document/:id', async (req, res) => {
   }
 });
 
-// View full DOCX document (converted to HTML)
+// Function to convert DOCX to PDF
+async function convertDocxToPdf(docxPath, pdfPath) {
+  return new Promise((resolve, reject) => {
+    docxPdf(docxPath, pdfPath, function(err, result) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+// View full document
 router.get('/document/:id', async (req, res) => {
     try {
       const doc = await Document.findById(req.params.id);
@@ -94,15 +113,10 @@ router.get('/document/:id', async (req, res) => {
           isPdf: false
         });
       }
-  
-      console.log('Document found:', doc);
-      console.log('File path:', doc.filePath);
-      console.log('File type:', doc.fileType);
 
       // Get absolute file path
       const filePath = path.join(__dirname, '..', doc.filePath);
-      console.log('Absolute file path:', filePath);
-
+      
       // Check if file exists
       if (!fs.existsSync(filePath)) {
         console.error('File not found at path:', filePath);
@@ -112,18 +126,27 @@ router.get('/document/:id', async (req, res) => {
           isPdf: false
         });
       }
-  
+
       if (doc.fileType === '.docx') {
         try {
-          // Convert DOCX to HTML using Mammoth
-          const result = await mammoth.convertToHtml({ path: filePath });
-          const html = result.value;
-          console.log('Conversion successful');
+          // Create PDF path
+          const pdfPath = filePath.replace('.docx', '.pdf');
+          
+          // Convert DOCX to PDF if PDF doesn't exist
+          if (!fs.existsSync(pdfPath)) {
+            await convertDocxToPdf(filePath, pdfPath);
+          }
+
+          // Get relative PDF path for URL
+          const relativePdfPath = path.relative(path.join(__dirname, '..'), pdfPath).replace(/\\/g, '/');
+          const pdfUrl = '/' + relativePdfPath;
+
           res.render('document', { 
             title: doc.title, 
-            htmlContent: html, 
-            isPdf: false,
-            error: null
+            pdfLink: pdfUrl,
+            isPdf: true,
+            error: null,
+            filename: path.basename(pdfPath)
           });
         } catch (conversionError) {
           console.error('Conversion error:', conversionError);
@@ -134,14 +157,12 @@ router.get('/document/:id', async (req, res) => {
           });
         }
       } else if (doc.fileType === '.pdf') {
-        // If it's a PDF, use the correct URL path
-        const pdfUrl = '/uploads/' + path.basename(doc.filePath);
-        console.log('PDF URL:', pdfUrl);
         res.render('document', { 
           title: doc.title, 
-          pdfLink: pdfUrl, 
+          pdfLink: '/uploads/' + path.basename(doc.filePath),
           isPdf: true,
-          error: null
+          error: null,
+          filename: path.basename(doc.filePath)
         });
       } else {
         res.render('document', {
@@ -159,6 +180,44 @@ router.get('/document/:id', async (req, res) => {
       });
     }
 });
-  
+
+// Download document
+router.get('/download/:id', async (req, res) => {
+  try {
+    const doc = await Document.findById(req.params.id);
+    if (!doc) {
+      return res.status(404).send('Document not found');
+    }
+
+    const filePath = path.join(__dirname, '..', doc.filePath);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).send('File not found');
+    }
+
+    if (doc.fileType === '.docx') {
+      // Convert DOCX to PDF for download
+      const pdfPath = filePath.replace('.docx', '.pdf');
+      
+      // Convert if PDF doesn't exist
+      if (!fs.existsSync(pdfPath)) {
+        try {
+          await convertDocxToPdf(filePath, pdfPath);
+        } catch (error) {
+          console.error('Conversion error:', error);
+          return res.status(500).send('Error converting document to PDF');
+        }
+      }
+
+      // Send the PDF file
+      res.download(pdfPath, `${doc.title.replace('.docx', '')}.pdf`);
+    } else {
+      // For PDF files, send directly
+      res.download(filePath, doc.title);
+    }
+  } catch (err) {
+    console.error('Download error:', err);
+    res.status(500).send('Error downloading document');
+  }
+});
 
 module.exports = router;

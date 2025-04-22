@@ -10,6 +10,324 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* Navbar brand styles */
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      flex-direction: row-reverse;
+    }
+
+    .navbar-brand img {
+      height: 40px;
+      width: auto;
+      margin-right: 0;
+      margin-left: 0;
+    }
+
+    .brand-text {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      letter-spacing: 1px;
+    }
+
+    /* About section styles */
+    .about-section {
+      padding: 2rem 0;
+    }
+
+    .about-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .about-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .about-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .about-header h1 {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 0.8rem;
+      text-shadow: 0 0 15px rgba(120, 115, 245, 0.5);
+    }
+
+    .about-header p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1rem;
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #7873f5;
+      text-shadow: 0 0 10px rgba(120, 115, 245, 0.5);
+    }
+
+    .team-section {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-top: 3rem;
+    }
+
+    .team-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      cursor: pointer;
+      padding: 1rem;
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .team-header:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .team-content {
+      display: none;
+      padding: 1rem;
+    }
+
+    .team-content.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .team-member {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .team-member:hover {
+      transform: translateX(10px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .team-member i {
+      color: #7873f5;
+      margin-right: 1rem;
+    }
+
+    .contact-section {
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    .contact-icon {
+      font-size: 2rem;
+      color: #7873f5;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .rotate-icon {
+      transition: transform 0.3s ease;
+    }
+
+    .rotate-icon.active {
+      transform: rotate(180deg);
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-item {
+      text-align: center;
+      padding: 1.2rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      transition: transform 0.3s ease;
+    }
+
+    .feature-item:hover {
+      transform: translateY(-3px);
+    }
+
+    .feature-item h3 {
+      font-size: 1.2rem;
+      margin: 0.5rem 0;
+      font-weight: 600;
+    }
+
+    .feature-item p {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 0;
+    }
+
+    /* Mobile Animation Styles */
+    @media (max-width: 768px) {
+      .about-card {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: slideUpFade 0.6s ease forwards;
+      }
+
+      .feature-item {
+        opacity: 0;
+        transform: translateY(15px);
+        animation: slideUpFade 0.4s ease forwards;
+      }
+
+      .feature-item:nth-child(1) { animation-delay: 0.1s; }
+      .feature-item:nth-child(2) { animation-delay: 0.2s; }
+      .feature-item:nth-child(3) { animation-delay: 0.3s; }
+      .feature-item:nth-child(4) { animation-delay: 0.4s; }
+
+      .team-member {
+        opacity: 0;
+        transform: translateX(-10px);
+        animation: slideInFade 0.3s ease forwards;
+      }
+
+      .team-content.active .team-member {
+        animation: slideInFade 0.3s ease forwards;
+      }
+
+      .team-content.active .team-member:nth-child(1) { animation-delay: 0.1s; }
+      .team-content.active .team-member:nth-child(2) { animation-delay: 0.15s; }
+      .team-content.active .team-member:nth-child(3) { animation-delay: 0.2s; }
+      .team-content.active .team-member:nth-child(4) { animation-delay: 0.25s; }
+      .team-content.active .team-member:nth-child(5) { animation-delay: 0.3s; }
+      .team-content.active .team-member:nth-child(6) { animation-delay: 0.35s; }
+      .team-content.active .team-member:nth-child(7) { animation-delay: 0.4s; }
+      .team-content.active .team-member:nth-child(8) { animation-delay: 0.45s; }
+      .team-content.active .team-member:nth-child(9) { animation-delay: 0.5s; }
+      .team-content.active .team-member:nth-child(10) { animation-delay: 0.55s; }
+      .team-content.active .team-member:nth-child(11) { animation-delay: 0.6s; }
+
+      .about-header h1 {
+        opacity: 0;
+        transform: translateY(-10px);
+        animation: slideDownFade 0.6s ease forwards;
+      }
+
+      .about-header p {
+        opacity: 0;
+        animation: fadeIn 0.6s ease 0.3s forwards;
+      }
+
+      .contact-section {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: slideUpFade 0.6s ease forwards;
+      }
+
+      .team-section {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: slideUpFade 0.6s ease 0.2s forwards;
+      }
+
+      /* Smooth scroll behavior */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Touch-friendly hover states */
+      .feature-item:active,
+      .team-member:active {
+        transform: scale(0.98);
+        transition: transform 0.2s ease;
+      }
+    }
+
+    /* Animation Keyframes */
+    @keyframes slideUpFade {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideDownFade {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInFade {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Optimize animations for reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* Enhanced touch feedback */
+    .feature-item, .team-member, .team-header {
+      -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
+    }
+
+    /* Smooth transition for all interactive elements */
+    .feature-item,
+    .team-member,
+    .team-header,
+    .contact-section {
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+  </style>
 </head>
 <body>
   <!-- Starfield -->
@@ -24,7 +342,8 @@
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
       <a class="navbar-brand" href="/">
-        <img src="/excited.gif" alt="NotesVault Logo">
+        <img src="/rgpv-notes.png" alt="NotesVault Logo">
+        <span class="brand-text">NotesVault</span>
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
@@ -45,55 +364,112 @@
     </div>
   </nav>
 
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="content-container">
-          <h2 class="text-center mb-4">About NotesVault</h2>
-          <div class="card mb-4">
-            <div class="card-body">
-              <h5 class="card-title">Our Mission</h5>
-              <p class="card-text">
-                NotesVault is dedicated to providing a secure and efficient platform for managing and accessing educational documents. 
-                Our mission is to make learning materials easily accessible while maintaining the highest standards of security and organization.
-              </p>
+  <div class="container about-section">
+    <!-- About Header -->
+    <div class="about-header">
+      <h1>Welcome to NotesVault</h1>
+      <p>Your secure platform for managing and accessing educational documents</p>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="about-card">
+      <div class="feature-grid">
+        <div class="feature-item">
+          <i class="fas fa-shield-alt feature-icon"></i>
+          <h3>Secure Storage</h3>
+          <p>Your documents are stored with enterprise-level security</p>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-search feature-icon"></i>
+          <h3>Smart Search</h3>
+          <p>Find documents quickly with our powerful search feature</p>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-file-pdf feature-icon"></i>
+          <h3>Format Support</h3>
+          <p>Support for DOCX and PDF file formats</p>
+        </div>
+        <div class="feature-item">
+          <i class="fas fa-mobile-alt feature-icon"></i>
+          <h3>Responsive Design</h3>
+          <p>Access your documents on any device</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="about-card team-section">
+      <div class="team-header" id="teamHeader">
+        <h2>Meet Our Team <i class="fas fa-chevron-down rotate-icon"></i></h2>
+        <p>The minds behind NotesVault</p>
+      </div>
+      <div class="team-content" id="teamContent">
+        <div class="text-center mb-4">
+          <h4>Computer Science & Engineering</h4>
+          <p>Government Polytechnic College Khirsadoh<br>Final Year Batch 2022</p>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="team-member">
+              <i class="fas fa-user-graduate"></i>
+              <span>Ashish Sahu (22023C04010)</span>
+            </div>
+            <div class="team-member">
+              <i class="fas fa-user-graduate"></i>
+              <span>Akash Soni (22023C04011)</span>
+            </div>
+            <div class="team-member">
+              <i class="fas fa-user-graduate"></i>
+              <span>Aman Sahu (22023C04012)</span>
+            </div>
+            <div class="team-member">
+              <i class="fas fa-user-graduate"></i>
+              <span>Ankit Sahu (22023C04013)</span>
+            </div>
+            <div class="team-member">
+              <i class="fas fa-user-graduate"></i>
+              <span>Bhupendra Sahu (22023C04014)</span>
             </div>
           </div>
-          <div class="card mb-4">
-            <div class="card-body">
-              <h5 class="card-title">Features</h5>
-              <ul class="list-unstyled">
-                <li class="mb-3">
-                  <i class="fas fa-shield-alt text-primary mr-2"></i>
-                  Secure document storage and access
-                </li>
-                <li class="mb-3">
-                  <i class="fas fa-search text-primary mr-2"></i>
-                  Easy document search and filtering
-                </li>
-                <li class="mb-3">
-                  <i class="fas fa-user-shield text-primary mr-2"></i>
-                  Admin-controlled document management
-                </li>
-                <li class="mb-3">
-                  <i class="fas fa-file-word text-primary mr-2"></i>
-                  Support for DOCX file format
-                </li>
-              </ul>
+          <div class="col-md-6">
+            <div class="team-member">
+              <i class="fas fa-user-graduate"></i>
+              <span>Devendra Sahu (22023C04015)</span>
             </div>
-          </div>
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Contact Us</h5>
-              <p class="card-text">
-                For any queries or support, please reach out to us at:
-                <br>
-                <i class="fas fa-envelope mr-2"></i> support@notesvault.com
-              </p>
+            <div class="team-member">
+              <i class="fas fa-user-graduate"></i>
+              <span>Harsh Sahu (22023C04016)</span>
+            </div>
+            <div class="team-member">
+              <i class="fas fa-user-graduate"></i>
+              <span>Himanshu Sahu (22023C04017)</span>
+            </div>
+            <div class="team-member">
+              <i class="fas fa-user-graduate"></i>
+              <span>Khilesh Sahu (22023C04018)</span>
+            </div>
+            <div class="team-member">
+              <i class="fas fa-user-graduate"></i>
+              <span>Lokesh Sahu (22023C04019)</span>
+            </div>
+            <div class="team-member">
+              <i class="fas fa-user-graduate"></i>
+              <span>Yogesh Sahu (22023C04020)</span>
             </div>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="about-card contact-section">
+      <i class="fas fa-envelope contact-icon"></i>
+      <h2>Get in Touch</h2>
+      <p>Have questions or suggestions? We'd love to hear from you!</p>
+      <p class="mt-3">
+        <i class="fas fa-envelope-open-text mr-2"></i>
+        support@notesvault.com
+      </p>
     </div>
   </div>
 
@@ -102,8 +478,9 @@
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-  <!-- Starfield Animation Script -->
+  <!-- Custom Scripts -->
   <script>
+    // Starfield Animation
     const canvas = document.getElementById('starfield');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -134,10 +511,78 @@
 
     animate();
 
+    // Enhanced Team Section Toggle with smooth animation
+    document.getElementById('teamHeader').addEventListener('click', function() {
+      const content = document.getElementById('teamContent');
+      const icon = this.querySelector('.rotate-icon');
+      
+      content.style.display = 'block';
+      content.style.height = '0';
+      content.style.overflow = 'hidden';
+      
+      if (!content.classList.contains('active')) {
+        content.classList.add('active');
+        icon.classList.add('active');
+        const height = content.scrollHeight;
+        content.style.transition = 'height 0.3s ease';
+        content.style.height = height + 'px';
+        
+        setTimeout(() => {
+          content.style.height = 'auto';
+        }, 300);
+      } else {
+        const height = content.scrollHeight;
+        content.style.height = height + 'px';
+        setTimeout(() => {
+          content.style.transition = 'height 0.3s ease';
+          content.style.height = '0';
+        }, 10);
+        
+        setTimeout(() => {
+          content.classList.remove('active');
+          icon.classList.remove('active');
+          content.style.display = 'none';
+          content.style.height = 'auto';
+        }, 300);
+      }
+    });
+
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '20px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Observe elements for scroll animation
+    document.querySelectorAll('.about-card, .feature-item, .team-section, .contact-section').forEach(el => {
+      el.style.animationPlayState = 'paused';
+      observer.observe(el);
+    });
+
     // Handle window resize
     window.addEventListener('resize', () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+    });
+
+    // Add touch feedback
+    document.querySelectorAll('.feature-item, .team-member').forEach(el => {
+      el.addEventListener('touchstart', function() {
+        this.style.transform = 'scale(0.98)';
+      });
+      
+      el.addEventListener('touchend', function() {
+        this.style.transform = 'scale(1)';
+      });
     });
   </script>
 </body>
