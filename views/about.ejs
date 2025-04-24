@@ -181,152 +181,6 @@
       color: rgba(255, 255, 255, 0.8);
       margin-bottom: 0;
     }
-
-    /* Mobile Animation Styles */
-    @media (max-width: 768px) {
-      .about-card {
-        opacity: 0;
-        transform: translateY(20px);
-        animation: slideUpFade 0.6s ease forwards;
-      }
-
-      .feature-item {
-        opacity: 0;
-        transform: translateY(15px);
-        animation: slideUpFade 0.4s ease forwards;
-      }
-
-      .feature-item:nth-child(1) { animation-delay: 0.1s; }
-      .feature-item:nth-child(2) { animation-delay: 0.2s; }
-      .feature-item:nth-child(3) { animation-delay: 0.3s; }
-      .feature-item:nth-child(4) { animation-delay: 0.4s; }
-
-      .team-member {
-        opacity: 0;
-        transform: translateX(-10px);
-        animation: slideInFade 0.3s ease forwards;
-      }
-
-      .team-content.active .team-member {
-        animation: slideInFade 0.3s ease forwards;
-      }
-
-      .team-content.active .team-member:nth-child(1) { animation-delay: 0.1s; }
-      .team-content.active .team-member:nth-child(2) { animation-delay: 0.15s; }
-      .team-content.active .team-member:nth-child(3) { animation-delay: 0.2s; }
-      .team-content.active .team-member:nth-child(4) { animation-delay: 0.25s; }
-      .team-content.active .team-member:nth-child(5) { animation-delay: 0.3s; }
-      .team-content.active .team-member:nth-child(6) { animation-delay: 0.35s; }
-      .team-content.active .team-member:nth-child(7) { animation-delay: 0.4s; }
-      .team-content.active .team-member:nth-child(8) { animation-delay: 0.45s; }
-      .team-content.active .team-member:nth-child(9) { animation-delay: 0.5s; }
-      .team-content.active .team-member:nth-child(10) { animation-delay: 0.55s; }
-      .team-content.active .team-member:nth-child(11) { animation-delay: 0.6s; }
-
-      .about-header h1 {
-        opacity: 0;
-        transform: translateY(-10px);
-        animation: slideDownFade 0.6s ease forwards;
-      }
-
-      .about-header p {
-        opacity: 0;
-        animation: fadeIn 0.6s ease 0.3s forwards;
-      }
-
-      .contact-section {
-        opacity: 0;
-        transform: translateY(20px);
-        animation: slideUpFade 0.6s ease forwards;
-      }
-
-      .team-section {
-        opacity: 0;
-        transform: translateY(20px);
-        animation: slideUpFade 0.6s ease 0.2s forwards;
-      }
-
-      /* Smooth scroll behavior */
-      html {
-        scroll-behavior: smooth;
-      }
-
-      /* Touch-friendly hover states */
-      .feature-item:active,
-      .team-member:active {
-        transform: scale(0.98);
-        transition: transform 0.2s ease;
-      }
-    }
-
-    /* Animation Keyframes */
-    @keyframes slideUpFade {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes slideDownFade {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes slideInFade {
-      from {
-        opacity: 0;
-        transform: translateX(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    /* Optimize animations for reduced motion preference */
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-      }
-    }
-
-    /* Enhanced touch feedback */
-    .feature-item, .team-member, .team-header {
-      -webkit-tap-highlight-color: transparent;
-      cursor: pointer;
-    }
-
-    /* Smooth transition for all interactive elements */
-    .feature-item,
-    .team-member,
-    .team-header,
-    .contact-section {
-      will-change: transform, opacity;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
   </style>
 </head>
 <body>
@@ -339,28 +193,27 @@
   </div>
 
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-      <a class="navbar-brand" href="/">
-        <img src="/rgpv-notes.png" alt="NotesVault Logo">
-        <span class="brand-text">NotesVault</span>
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a href="/" class="navbar-item">
+        NotesVault
       </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/admin"><i class="fas fa-user-shield"></i> Admin</a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="/about"><i class="fas fa-info-circle"></i> About</a>
-          </li>
-        </ul>
-      </div>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/admin"><i class="fas fa-user-shield"></i> Admin</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/about"><i class="fas fa-info-circle"></i> About</a>
+        </li>
+      </ul>
     </div>
   </nav>
 
@@ -511,78 +364,18 @@
 
     animate();
 
-    // Enhanced Team Section Toggle with smooth animation
+    // Team Section Toggle
     document.getElementById('teamHeader').addEventListener('click', function() {
       const content = document.getElementById('teamContent');
       const icon = this.querySelector('.rotate-icon');
-      
-      content.style.display = 'block';
-      content.style.height = '0';
-      content.style.overflow = 'hidden';
-      
-      if (!content.classList.contains('active')) {
-        content.classList.add('active');
-        icon.classList.add('active');
-        const height = content.scrollHeight;
-        content.style.transition = 'height 0.3s ease';
-        content.style.height = height + 'px';
-        
-        setTimeout(() => {
-          content.style.height = 'auto';
-        }, 300);
-      } else {
-        const height = content.scrollHeight;
-        content.style.height = height + 'px';
-        setTimeout(() => {
-          content.style.transition = 'height 0.3s ease';
-          content.style.height = '0';
-        }, 10);
-        
-        setTimeout(() => {
-          content.classList.remove('active');
-          icon.classList.remove('active');
-          content.style.display = 'none';
-          content.style.height = 'auto';
-        }, 300);
-      }
-    });
-
-    // Intersection Observer for scroll animations
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '20px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.style.animationPlayState = 'running';
-          observer.unobserve(entry.target);
-        }
-      });
-    }, observerOptions);
-
-    // Observe elements for scroll animation
-    document.querySelectorAll('.about-card, .feature-item, .team-section, .contact-section').forEach(el => {
-      el.style.animationPlayState = 'paused';
-      observer.observe(el);
+      content.classList.toggle('active');
+      icon.classList.toggle('active');
     });
 
     // Handle window resize
     window.addEventListener('resize', () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-    });
-
-    // Add touch feedback
-    document.querySelectorAll('.feature-item, .team-member').forEach(el => {
-      el.addEventListener('touchstart', function() {
-        this.style.transform = 'scale(0.98)';
-      });
-      
-      el.addEventListener('touchend', function() {
-        this.style.transform = 'scale(1)';
-      });
     });
   </script>
 </body>
