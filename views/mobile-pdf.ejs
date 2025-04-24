@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %> - NotesVault</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #000000;
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+      touch-action: pan-y pinch-zoom;
+    }
+
+    .pdf-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pdf-toolbar {
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      position: sticky;
+      top: 0;
+    }
+
+    .pdf-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 60%;
+    }
+
+    .pdf-controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .pdf-button {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .pdf-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .pdf-viewer-container {
+      flex: 1;
+      width: 100%;
+      height: calc(100% - 60px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      background: #000;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .pdf-pages {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0;
+      gap: 20px;
+    }
+
+    .pdf-page {
+      margin: 0 auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      max-width: 100%;
+      height: auto;
+    }
+
+    .loading {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    .controls-container {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 1000;
+    }
+
+    .page-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .page-info {
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 0.9rem;
+    }
+
+    .zoom-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .control-button {
+      background: rgba(0, 0, 0, 0.8);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .control-button:hover {
+      background: rgba(0, 0, 0, 0.9);
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+      .pdf-toolbar {
+        padding: 8px;
+      }
+
+      .pdf-title {
+        font-size: 0.9rem;
+      }
+
+      .pdf-button {
+        width: 35px;
+        height: 35px;
+      }
+
+      .control-button {
+        width: 45px;
+        height: 45px;
+      }
+
+      .page-info {
+        padding: 8px 15px;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <% if (isPdf) { %>
+    <div class="pdf-container">
+      <div class="pdf-toolbar">
+        <h1 class="pdf-title"><%= title %></h1>
+        <div class="pdf-controls">
+          <button class="pdf-button" onclick="window.history.back()">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <a href="<%= pdfLink %>" download class="pdf-button">
+            <i class="fas fa-download"></i>
+          </a>
+        </div>
+      </div>
+      <div class="pdf-viewer-container" id="pdfViewer">
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <p>Loading PDF...</p>
+        </div>
+      </div>
+      <div class="controls-container">
+        <div class="page-controls">
+          <button class="control-button" onclick="previousPage()">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <span class="page-info" id="pageInfo">Page 1 of 1</span>
+          <button class="control-button" onclick="nextPage()">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        <div class="zoom-controls">
+          <button class="control-button" onclick="zoomIn()">
+            <i class="fas fa-search-plus"></i>
+          </button>
+          <button class="control-button" onclick="zoomOut()">
+            <i class="fas fa-search-minus"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  <% } else if (error) { %>
+    <div class="error-message">
+      <h3>Error</h3>
+      <p><%= error %></p>
+    </div>
+  <% } %>
+
+  <script>
+    // Initialize PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    
+    let pdfDoc = null;
+    let currentPage = 1;
+    let currentZoom = 1.0;
+    let pageRendering = false;
+    let pageNumPending = null;
+    let pages = [];
+    let pdfViewer = null;
+
+    // Load the PDF
+    async function loadPDF() {
+      try {
+        const loading = document.querySelector('.loading');
+        pdfViewer = document.getElementById('pdfViewer');
+        
+        // Load the PDF document
+        pdfDoc = await pdfjsLib.getDocument('<%= pdfLink %>').promise;
+        
+        // Create container for pages
+        const pagesContainer = document.createElement('div');
+        pagesContainer.className = 'pdf-pages';
+        pdfViewer.innerHTML = '';
+        pdfViewer.appendChild(pagesContainer);
+        
+        // Update page info
+        document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+        
+        // Render all pages
+        await renderAllPages();
+      } catch (error) {
+        console.error('Error loading PDF:', error);
+        pdfViewer.innerHTML = `
+          <div class="error-message">
+            <h3>Error Loading PDF</h3>
+            <p>${error.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    // Render all pages
+    async function renderAllPages() {
+      const pagesContainer = document.querySelector('.pdf-pages');
+      pages = [];
+      
+      for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const page = await pdfDoc.getPage(i);
+        const viewport = page.getViewport({ scale: currentZoom });
+        
+        const canvas = document.createElement('canvas');
+        canvas.className = 'pdf-page';
+        pagesContainer.appendChild(canvas);
+        
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        
+        const ctx = canvas.getContext('2d');
+        const renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        
+        await page.render(renderContext).promise;
+        pages.push(canvas);
+      }
+    }
+
+    // Navigation functions
+    function previousPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        updatePageDisplay();
+      }
+    }
+
+    function nextPage() {
+      if (currentPage < pdfDoc.numPages) {
+        currentPage++;
+        updatePageDisplay();
+      }
+    }
+
+    function updatePageDisplay() {
+      document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${pdfDoc.numPages}`;
+      pages[currentPage - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Zoom functions
+    async function zoomIn() {
+      if (currentZoom < 3) {
+        currentZoom += 0.25;
+        await renderAllPages();
+        updatePageDisplay();
+      }
+    }
+
+    async function zoomOut() {
+      if (currentZoom > 0.5) {
+        currentZoom -= 0.25;
+        await renderAllPages();
+        updatePageDisplay();
+      }
+    }
+
+    // Load the PDF when the page loads
+    window.onload = loadPDF;
+
+    // Handle touch events for better mobile experience
+    let touchStartY = 0;
+    let touchStartX = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+      touchStartX = e.touches[0].clientX;
+    });
+
+    document.addEventListener('touchmove', (e) => {
+      const touchEndY = e.touches[0].clientY;
+      const touchEndX = e.touches[0].clientX;
+      
+      // Prevent default if it's a vertical scroll
+      if (Math.abs(touchEndY - touchStartY) > Math.abs(touchEndX - touchStartX)) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  </script>
+</body>
+</html> 

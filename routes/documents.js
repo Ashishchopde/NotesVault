@@ -127,6 +127,9 @@ router.get('/document/:id', async (req, res) => {
         });
       }
 
+      // Check if the request is from a mobile device
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(req.headers['user-agent']);
+
       if (doc.fileType === '.docx') {
         try {
           // Create PDF path
@@ -141,7 +144,7 @@ router.get('/document/:id', async (req, res) => {
           const relativePdfPath = path.relative(path.join(__dirname, '..'), pdfPath).replace(/\\/g, '/');
           const pdfUrl = '/' + relativePdfPath;
 
-          res.render('document', { 
+          res.render(isMobile ? 'mobile-pdf' : 'document', { 
             title: doc.title, 
             pdfLink: pdfUrl,
             isPdf: true,
@@ -157,7 +160,7 @@ router.get('/document/:id', async (req, res) => {
           });
         }
       } else if (doc.fileType === '.pdf') {
-        res.render('document', { 
+        res.render(isMobile ? 'mobile-pdf' : 'document', { 
           title: doc.title, 
           pdfLink: '/uploads/' + path.basename(doc.filePath),
           isPdf: true,
