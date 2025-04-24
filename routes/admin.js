@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const Document = require('../models/document');
+const document = require('../models/document');
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, '..', 'uploads');
@@ -61,7 +61,7 @@ router.get('/admin/logout', (req, res) => {
 // Admin dashboard
 router.get('/admin/dashboard', isAuthenticated, async (req, res) => {
   try {
-    const documents = await Document.find().sort({ uploadedAt: -1 });
+    const documents = await document.find().sort({ uploadedAt: -1 });
     res.render('admin-dashboard', { documents });
   } catch (err) {
     res.status(500).send('Error retrieving documents');
@@ -80,7 +80,7 @@ router.post('/admin/upload', isAuthenticated, upload.single('docfile'), async (r
     if (!req.file) {
       return res.status(400).send('No file uploaded.');
     }
-    const doc = new Document({
+    const doc = new document({
       title: title || req.file.originalname,
       originalName: req.file.originalname,
       filePath: path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/'),
@@ -97,7 +97,7 @@ router.post('/admin/upload', isAuthenticated, upload.single('docfile'), async (r
 // Delete document
 router.delete('/admin/document/:id', isAuthenticated, async (req, res) => {
   try {
-    const doc = await Document.findById(req.params.id);
+    const doc = await document.findById(req.params.id);
     if (!doc) {
       return res.status(404).send('Document not found.');
     }
@@ -111,7 +111,7 @@ router.delete('/admin/document/:id', isAuthenticated, async (req, res) => {
     }
 
     // Delete the document from the database
-    await Document.findByIdAndDelete(req.params.id);
+    await document.findByIdAndDelete(req.params.id);
     res.status(200).send('Document deleted successfully');
   } catch (err) {
     console.error('Error deleting document:', err);
