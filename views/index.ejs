@@ -537,25 +537,25 @@
             <h2 class="section-title mb-4">Available Documents</h2>
           </div>
         </div>
-        <div class="row" id="documentsContainer">
-          <% documents.forEach(function(doc) { %>
-            <div class="col-md-4 document-card">
-              <div class="card">
-                <div class="card-body">
-                  <h5 class="card-title"><%= doc.title.replace('.docx', '') %></h5>
-                  <p class="card-text">Uploaded on: <%= doc.uploadedAt.toDateString() %></p>
-                  <div class="card-actions">
-                    <a href="/document/<%= doc._id %>" class="btn btn-secondary">
-                      <i class="fas fa-eye"></i> View
-                    </a>
-                    <a href="/download/<%= doc._id %>" class="btn btn-download">
-                      <i class="fas fa-download"></i> Download
-                    </a>
-                  </div>
+      <div class="row" id="documentsContainer">
+        <% documents.forEach(function(doc) { %>
+          <div class="col-md-4 document-card">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><%= doc.title.replace('.docx', '') %></h5>
+                <p class="card-text">Uploaded on: <%= doc.uploadedAt.toDateString() %></p>
+                <div class="card-actions">
+                  <a href="/document/<%= doc._id %>" class="btn btn-secondary">
+                    <i class="fas fa-eye"></i> View
+                  </a>
+                  <a href="/download/<%= doc._id %>" class="btn btn-download">
+                    <i class="fas fa-download"></i> Download
+                  </a>
                 </div>
               </div>
             </div>
-          <% }) %>
+          </div>
+        <% }) %>
         </div>
       </div>
     </div>
