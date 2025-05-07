@@ -349,6 +349,8 @@
     .search-container {
       position: relative;
       margin-right: 15px;
+      display: flex;
+      align-items: center;
     }
 
     .search-input {
@@ -372,12 +374,23 @@
       color: rgba(255, 255, 255, 0.7);
     }
 
-    .search-icon {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
+    .search-button {
+      background: transparent;
+      border: none;
       color: rgba(255, 255, 255, 0.7);
+      padding: 8px 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: absolute;
+      right: 0;
+    }
+
+    .search-button:hover {
+      color: white;
+    }
+
+    .search-icon {
+      font-size: 1rem;
     }
 
     /* Container adjustment */
@@ -459,7 +472,9 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <div class="search-container">
           <input type="text" class="search-input" id="searchInput" placeholder="Search documents...">
-          <i class="fas fa-search search-icon"></i>
+          <button class="search-button" id="searchButton">
+            <i class="fas fa-search search-icon"></i>
+          </button>
         </div>
         <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
@@ -610,18 +625,65 @@
     animate();
 
     // Search functionality
-    document.getElementById('searchInput').addEventListener('input', function(e) {
-      const searchTerm = e.target.value.toLowerCase();
+    function performSearch() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
       const cards = document.querySelectorAll('.document-card');
+      let hasResults = false;
       
       cards.forEach(card => {
         const title = card.querySelector('.card-title').textContent.toLowerCase();
-        if (title.includes(searchTerm)) {
+        const uploadDate = card.querySelector('.card-text').textContent.toLowerCase();
+        
+        if (title.includes(searchTerm) || uploadDate.includes(searchTerm)) {
           card.style.display = '';
+          hasResults = true;
         } else {
           card.style.display = 'none';
         }
       });
+
+      // Show/hide no results message
+      let noResultsMsg = document.getElementById('noResultsMessage');
+      if (!hasResults && searchTerm !== '') {
+        if (!noResultsMsg) {
+          noResultsMsg = document.createElement('div');
+          noResultsMsg.id = 'noResultsMessage';
+          noResultsMsg.className = 'col-12 text-center mt-4';
+          noResultsMsg.innerHTML = '<p class="text-white-50">No documents found matching your search.</p>';
+          document.getElementById('documentsContainer').appendChild(noResultsMsg);
+        }
+      } else if (noResultsMsg) {
+        noResultsMsg.remove();
+      }
+
+      // Scroll to documents section
+      if (searchTerm !== '') {
+        document.getElementById('documents').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // Add event listeners for search
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+
+    document.getElementById('searchButton').addEventListener('click', performSearch);
+
+    // Real-time search as user types
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      if (e.target.value === '') {
+        // If search is cleared, show all documents
+        const cards = document.querySelectorAll('.document-card');
+        cards.forEach(card => card.style.display = '');
+        
+        // Remove no results message if it exists
+        const noResultsMsg = document.getElementById('noResultsMessage');
+        if (noResultsMsg) {
+          noResultsMsg.remove();
+        }
+      }
     });
 
     // Handle window resize
