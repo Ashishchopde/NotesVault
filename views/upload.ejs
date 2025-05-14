@@ -4,9 +4,296 @@
   <meta charset="UTF-8">
   <title>Upload Document - NotesVault</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* Background Styles */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background: #000000;
+      overflow-x: hidden;
+      position: relative;
+      color: white;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Main content wrapper */
+    .main-content {
+      flex: 1 0 auto;
+      padding-bottom: 60px;
+    }
+
+    /* Blob Animation */
+    .blob-bg {
+      position: fixed;
+      top: -150px;
+      left: -150px;
+      z-index: -2;
+    }
+
+    .blob {
+      width: 500px;
+      height: 500px;
+      background: linear-gradient(135deg, #ff6ec4, #7873f5);
+      border-radius: 50%;
+      animation: blob 20s infinite ease-in-out;
+      filter: blur(120px);
+      opacity: 0.5;
+    }
+
+    @keyframes blob {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(100px, 80px) scale(1.1); }
+      66% { transform: translate(-80px, 100px) scale(0.9); }
+    }
+
+    /* Starfield Canvas */
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -3;
+      background: transparent;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+      background: transparent !important;
+      position: relative;
+      z-index: 1000;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+    }
+
+    .brand-text {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      letter-spacing: 1px;
+    }
+
+    .nav-link {
+      color: white !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-link:hover {
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    /* Upload Form Styles */
+    .upload-form {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .section-title {
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 0;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -1rem;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(90deg, #7873f5, #ec4899);
+      border-radius: 3px;
+    }
+
+    .form-group label {
+      color: white;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 0.75rem 1.25rem;
+      color: white;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      line-height: 1.5;
+      height: auto;
+    }
+
+    .form-control:focus {
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(120, 115, 245, 0.3);
+      color: white;
+    }
+
+    .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .category-select-container {
+      position: relative;
+    }
+
+    .category-select {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 0.75rem 1.25rem;
+      color: white;
+      width: 100%;
+      transition: all 0.3s ease;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1.5;
+      height: auto;
+    }
+
+    .category-select:focus {
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(120, 115, 245, 0.3);
+    }
+
+    .category-select option {
+      background: #1a1a1a;
+      color: white;
+      padding: 12px;
+      font-size: 1rem;
+    }
+
+    .category-select-container::after {
+      content: '\f078';
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      position: absolute;
+      right: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.7);
+      pointer-events: none;
+      font-size: 0.9rem;
+    }
+
+    .custom-file {
+      position: relative;
+      display: block;
+      width: 100%;
+    }
+
+    .custom-file-input {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: calc(1.5em + 1.5rem + 2px);
+      margin: 0;
+      opacity: 0;
+    }
+
+    .custom-file-label {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 1;
+      height: calc(1.5em + 1.5rem + 2px);
+      padding: 0.75rem 1.25rem;
+      font-weight: 400;
+      line-height: 1.5;
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .custom-file-label::after {
+      content: 'Browse';
+      display: inline-block;
+      padding: 0.375rem 0.75rem;
+      background: linear-gradient(45deg, #7873f5, #6c5ce7);
+      border-radius: 20px;
+      color: white;
+      font-weight: 500;
+    }
+
+    .btn-submit {
+      background: linear-gradient(45deg, #7873f5, #6c5ce7);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+      color: white;
+    }
+
+    .btn-submit:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(120, 115, 245, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .upload-form {
+        padding: 1.5rem;
+      }
+
+      .section-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+
+      .form-control,
+      .category-select {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <!-- Starfield -->
@@ -20,77 +307,75 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-    <div class="navbar-brand">
-      <a href="/" class="navbar-item">
-        NotesVault
+      <a class="navbar-brand" href="/">
+        <span class="brand-text">NotesVault Admin</span>
       </a>
-    </div>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <div class="search-container">
-          <input type="text" class="search-input" id="searchInput" placeholder="Search documents...">
-          <i class="fas fa-search search-icon"></i>
-        </div>
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="/admin"><i class="fas fa-user-shield"></i> Admin</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/about"><i class="fas fa-info-circle"></i> About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </li>
-      </ul>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/dashboard"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+          </li>
+        </ul>
       </div>
     </div>
   </nav>
 
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="admin-form">
-          <h2 class="text-center mb-4">Upload New Document</h2>
-          <form action="/admin/upload" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-              <label for="title">Document Title</label>
-              <input type="text" class="form-control" id="title" name="title" placeholder="Enter document title">
-              <small class="form-text text-muted">Leave blank to use file name</small>
-            </div>
-            <div class="form-group">
-              <label for="docfile">Document File</label>
-              <div class="custom-file">
-                <input type="file" class="custom-file-input" id="docfile" name="docfile" accept=".docx,.pdf" required>
-                <label class="custom-file-label" for="docfile">Choose file...</label>
-              </div>
-              <small class="form-text text-muted">Only .docx and .pdf files are supported</small>
-            </div>
-            <div class="text-center mt-4">
-              <button type="submit" class="btn btn-primary mr-3">
-                <i class="fas fa-upload mr-2"></i> Upload Document
-              </button>
-              <a href="/admin/dashboard" class="btn btn-secondary">
-                <i class="fas fa-times mr-2"></i> Cancel
-              </a>
-            </div>
-          </form>
+  <div class="main-content">
+    <div class="container mt-5">
+      <div class="upload-form">
+        <div class="section-header">
+          <h2 class="section-title">Upload New Document</h2>
         </div>
+
+        <form action="/admin/upload" method="POST" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="title">Document Title</label>
+            <input type="text" class="form-control" id="title" name="title" required placeholder="Enter document title">
+          </div>
+
+          <div class="form-group">
+            <label for="category">Category</label>
+            <div class="category-select-container">
+              <select class="form-control category-select" id="category" name="category" required>
+                <option value="">Select a category</option>
+                <option value="computer_science">Computer Science</option>
+                <option value="mining">Mining</option>
+                <option value="it">Information Technology</option>
+                <option value="electrical">Electrical</option>
+                <option value="civil">Civil</option>
+                <option value="mechanical">Mechanical</option>
+                <option value="electronics">Electronics</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="document">Document File</label>
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" id="document" name="docfile" required accept=".pdf,.docx">
+              <label class="custom-file-label" for="document">Choose file</label>
+            </div>
+            <small class="form-text text-muted">Supported formats: PDF, DOCX</small>
+          </div>
+
+          <button type="submit" class="btn btn-submit">
+            <i class="fas fa-upload"></i> Upload Document
+          </button>
+        </form>
       </div>
     </div>
   </div>
 
   <!-- Bootstrap JS and dependencies -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-  <!-- Starfield Animation Script -->
   <script>
+    // Starfield Animation
     const canvas = document.getElementById('starfield');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -121,17 +406,16 @@
 
     animate();
 
-    // Update file input label
-    document.querySelector('.custom-file-input').addEventListener('change', function(e) {
-      const fileName = e.target.files[0].name;
-      const label = e.target.nextElementSibling;
-      label.textContent = fileName;
-    });
-
     // Handle window resize
     window.addEventListener('resize', () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+    });
+
+    // Update custom file input label
+    document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+      const fileName = e.target.files[0]?.name || 'Choose file';
+      e.target.nextElementSibling.textContent = fileName;
     });
   </script>
 </body>

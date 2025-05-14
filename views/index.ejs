@@ -138,20 +138,167 @@
       flex-direction: column;
     }
 
-    /* Welcome Section Styles */
-    .welcome-section {
-      padding: 2rem 0;
+    /* Dropdown styles */
+    .form-control {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
     }
 
-    .welcome-section h1 {
+    .form-control option {
+      background: #2c2c2c;
       color: white;
-      font-weight: 600;
+    }
+
+    .form-control:focus {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: white;
+      box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.1);
+    }
+
+    .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Welcome Section Styles */
+    .welcome-section {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .welcome-section.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .welcome-content {
+      text-align: center;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .welcome-section.active .welcome-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .welcome-title {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 20px rgba(120, 115, 245, 0.5);
+      background: linear-gradient(45deg, #7873f5, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: titleGlow 2s ease-in-out infinite;
+    }
+
+    .welcome-subtitle {
+      font-size: 1.5rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 2rem;
+    }
+
+    .welcome-features {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .feature-item {
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .welcome-section.active .feature-item {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .feature-item:nth-child(1) { transition-delay: 0.2s; }
+    .feature-item:nth-child(2) { transition-delay: 0.4s; }
+    .feature-item:nth-child(3) { transition-delay: 0.6s; }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      color: #7873f5;
+      margin-bottom: 1rem;
       text-shadow: 0 0 15px rgba(120, 115, 245, 0.5);
     }
 
-    .welcome-section .lead {
+    .feature-text {
       color: rgba(255, 255, 255, 0.9);
-      font-size: 1.25rem;
+      font-size: 1.1rem;
+    }
+
+    .welcome-button {
+      background: linear-gradient(45deg, #7873f5, #6c5ce7);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 1rem 2.5rem;
+      font-size: 1.2rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .welcome-section.active .welcome-button {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.8s;
+    }
+
+    .welcome-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(108, 92, 231, 0.4);
+    }
+
+    @keyframes titleGlow {
+      0%, 100% { text-shadow: 0 0 20px rgba(120, 115, 245, 0.5); }
+      50% { text-shadow: 0 0 30px rgba(120, 115, 245, 0.8); }
+    }
+
+    @media (max-width: 768px) {
+      .welcome-title {
+        font-size: 2.5rem;
+      }
+
+      .welcome-subtitle {
+        font-size: 1.2rem;
+      }
+
+      .welcome-features {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .feature-icon {
+        font-size: 2rem;
+      }
+
+      .feature-text {
+        font-size: 1rem;
+      }
     }
 
     /* Section Title Styles */
@@ -175,13 +322,13 @@
       border-radius: 3px;
     }
 
-    /* Category Card Styles */
+    /* Educational Categories Styles */
     .category-card {
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 15px;
-      padding: 1.5rem;
+      padding: 1rem; /* Reduced padding */
       text-align: center;
       transition: all 0.3s ease;
       height: 100%;
@@ -202,13 +349,13 @@
 
     .category-card h3 {
       color: white;
-      font-size: 1.25rem;
+      font-size: 1.1rem; /* Reduced font size */
       margin-bottom: 0.5rem;
     }
 
     .category-card p {
       color: rgba(255, 255, 255, 0.8);
-      font-size: 0.9rem;
+      font-size: 0.8rem; /* Reduced font size */
       margin-bottom: 0;
     }
 
@@ -345,54 +492,6 @@
       box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
     }
 
-    /* Search bar styles */
-    .search-container {
-      position: relative;
-      margin-right: 15px;
-      display: flex;
-      align-items: center;
-    }
-
-    .search-input {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 25px;
-      padding: 8px 20px;
-      color: white;
-      width: 200px;
-      transition: all 0.3s ease;
-    }
-
-    .search-input:focus {
-      background: rgba(255, 255, 255, 0.15);
-      width: 250px;
-      outline: none;
-      color: white;
-    }
-
-    .search-input::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    .search-button {
-      background: transparent;
-      border: none;
-      color: rgba(255, 255, 255, 0.7);
-      padding: 8px 15px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: absolute;
-      right: 0;
-    }
-
-    .search-button:hover {
-      color: white;
-    }
-
-    .search-icon {
-      font-size: 1rem;
-    }
-
     /* Container adjustment */
     .container {
       position: relative;
@@ -447,6 +546,246 @@
       42% { transform: scale(1.3); }
       70% { transform: scale(1); }
     }
+
+    /* Document Card Styles */
+    .document-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .document-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card:hover {
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-icon {
+      position: absolute;
+      top: -15px;
+      right: -15px;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #7873f5, #6c5ce7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+      z-index: 1;
+    }
+
+    .card-icon i {
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .card-body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      gap: 0.75rem;
+      position: relative;
+      z-index: 0;
+    }
+
+    .card-header-custom {
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-title {
+      color: white;
+      font-weight: 600;
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.4;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      min-height: 2.8em;
+      word-break: break-word;
+    }
+
+    .card-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .badge {
+      padding: 0.35rem 0.6rem;
+      font-size: 0.8rem;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .badge i {
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .card-date {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-date i {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: auto;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn {
+      flex: 1;
+      border-radius: 15px;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      border: none;
+      white-space: nowrap;
+    }
+
+    .btn-view {
+      background: linear-gradient(45deg, #7873f5, #6c5ce7);
+      color: white;
+    }
+
+    .btn-download {
+      background: linear-gradient(45deg, #00b894, #00cec9);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      color: white;
+    }
+
+    .btn-view:hover {
+      background: linear-gradient(45deg, #6c5ce7, #7873f5);
+    }
+
+    .btn-download:hover {
+      background: linear-gradient(45deg, #00cec9, #00b894);
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 1200px) {
+      .card-title {
+        font-size: 0.95rem;
+      }
+      
+      .badge {
+        padding: 0.3rem 0.5rem;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .document-card {
+        margin-bottom: 1.25rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .card-body {
+        padding: 1rem;
+        gap: 0.5rem;
+      }
+
+      .card-title {
+        font-size: 0.9rem;
+        min-height: 2.6em;
+      }
+
+      .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.4rem;
+      }
+
+      .btn {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8rem;
+      }
+
+      .card-date {
+        font-size: 0.75rem;
+      }
+
+      .card-icon {
+        width: 50px;
+        height: 50px;
+      }
+
+      .card-icon i {
+        font-size: 1.25rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .card-actions {
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .card-meta {
+        justify-content: center;
+      }
+
+      .card-date {
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -470,12 +809,6 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <div class="search-container">
-          <input type="text" class="search-input" id="searchInput" placeholder="Search documents...">
-          <button class="search-button" id="searchButton">
-            <i class="fas fa-search search-icon"></i>
-          </button>
-        </div>
         <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
             <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
@@ -494,53 +827,61 @@
   <div class="main-content">
     <div class="container mt-5">
       <!-- Welcome Section -->
-      <div class="welcome-section text-center mb-5">
-        <h1 class="display-4 mb-3">Welcome to NotesVault</h1>
-        <p class="lead">Your digital library for educational excellence</p>
-        <a href="#documents" class="btn btn-primary mt-3">
-          <i class="fas fa-book mr-2"></i> View Available Documents
-        </a>
+      <div class="welcome-section" id="welcomeSection">
+        <div class="welcome-content">
+          <h1 class="welcome-title">Welcome to NotesVault</h1>
+          <p class="welcome-subtitle">Your Ultimate Document Management Solution</p>
+          
+          <div class="welcome-features">
+            <div class="feature-item">
+              <div class="feature-icon">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div class="feature-text">Easy Document Management</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">
+                <i class="fas fa-search"></i>
+              </div>
+              <div class="feature-text">Quick Search & Filter</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <div class="feature-text">Secure & Reliable</div>
+            </div>
+          </div>
+
+          <button class="welcome-button" onclick="closeWelcome()">
+            Get Started <i class="fas fa-arrow-right ml-2"></i>
+          </button>
+        </div>
       </div>
 
-      <!-- Educational Categories -->
-      <div class="row mb-5">
-        <div class="col-12">
-          <h2 class="section-title mb-4">Educational Categories</h2>
-        </div>
-        <div class="col-md-3 mb-4">
-          <div class="category-card">
-            <div class="category-icon">
-              <i class="fas fa-laptop-code"></i>
+      <!-- Filter Controls -->
+      <div class="container mt-4">
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="categoryFilter" class="text-white">Category</label>
+              <select class="form-control" id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="computer_science">Computer Science</option>
+                <option value="mining">Mining</option>
+                <option value="it">Information Technology</option>
+                <option value="electrical">Electrical</option>
+                <option value="civil">Civil</option>
+                <option value="mechanical">Mechanical</option>
+                <option value="electronics">Electronics</option>
+              </select>
             </div>
-            <h3>Computer Science</h3>
-            <p>Programming, algorithms, and software engineering resources</p>
           </div>
-        </div>
-        <div class="col-md-3 mb-4">
-          <div class="category-card">
-            <div class="category-icon">
-              <i class="fas fa-calculator"></i>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="searchFilter" class="text-white">Search</label>
+              <input type="text" class="form-control" id="searchFilter" placeholder="Search documents...">
             </div>
-            <h3>Mathematics</h3>
-            <p>Algebra, calculus, and mathematical concepts</p>
-          </div>
-        </div>
-        <div class="col-md-3 mb-4">
-          <div class="category-card">
-            <div class="category-icon">
-              <i class="fas fa-atom"></i>
-            </div>
-            <h3>Sciences</h3>
-            <p>Physics, chemistry, and biology materials</p>
-          </div>
-        </div>
-        <div class="col-md-3 mb-4">
-          <div class="category-card">
-            <div class="category-icon">
-              <i class="fas fa-language"></i>
-            </div>
-            <h3>Languages</h3>
-            <p>English, technical writing, and communication</p>
           </div>
         </div>
       </div>
@@ -552,25 +893,115 @@
             <h2 class="section-title mb-4">Available Documents</h2>
           </div>
         </div>
-      <div class="row" id="documentsContainer">
-        <% documents.forEach(function(doc) { %>
-          <div class="col-md-4 document-card">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title"><%= doc.title.replace('.docx', '') %></h5>
-                <p class="card-text">Uploaded on: <%= doc.uploadedAt.toDateString() %></p>
-                <div class="card-actions">
-                  <a href="/document/<%= doc._id %>" class="btn btn-secondary">
-                    <i class="fas fa-eye"></i> View
-                  </a>
-                  <a href="/download/<%= doc._id %>" class="btn btn-download">
-                    <i class="fas fa-download"></i> Download
-                  </a>
+        <div class="row" id="documentList">
+          <% documents.forEach(doc => { %>
+            <div class="col-xl-3 col-lg-4 col-md-6 mb-4 document-card" 
+                 data-category="<%= doc.category %>"
+                 data-title="<%= doc.title.toLowerCase() %>">
+              <div class="card h-100">
+                <div class="card-icon">
+                  <i class="fas fa-book-open"></i>
+                </div>
+                <div class="card-body">
+                  <div class="card-header-custom">
+                    <h5 class="card-title" title="<%= doc.title %>"><%= doc.title %></h5>
+                  </div>
+                  <div class="card-content">
+                    <div class="card-meta">
+                      <span class="badge badge-primary" title="Category">
+                        <i class="fas fa-folder"></i> <%= doc.category %>
+                      </span>
+                      <span class="badge badge-info" title="Views">
+                        <i class="fas fa-eye"></i> <%= doc.viewCount || 0 %>
+                      </span>
+                    </div>
+                    <div class="card-date">
+                      <i class="fas fa-calendar-alt"></i>
+                      <span><%= new Date(doc.uploadedAt).toLocaleDateString() %></span>
+                    </div>
+                  </div>
+                  <div class="card-actions">
+                    <a href="/document/<%= doc._id %>" class="btn btn-view" title="View Document">
+                      <i class="fas fa-eye"></i> View
+                    </a>
+                    <a href="/download/<%= doc._id %>" class="btn btn-download" title="Download Document">
+                      <i class="fas fa-download"></i> Download
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
+          <% }); %>
+        </div>
+      </div>
+
+      <!-- Engineering Categories -->
+      <div class="row mb-5 mt-5">
+        <div class="col-12">
+          <h2 class="section-title mb-4">Engineering Categories</h2>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="category-card">
+            <div class="category-icon">
+              <i class="fas fa-laptop-code"></i>
+            </div>
+            <h3>Computer Science</h3>
+            <p>Programming, algorithms, and software engineering</p>
           </div>
-        <% }) %>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="category-card">
+            <div class="category-icon">
+              <i class="fas fa-industry"></i>
+            </div>
+            <h3>Mining</h3>
+            <p>Mineral extraction and processing</p>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="category-card">
+            <div class="category-icon">
+              <i class="fas fa-network-wired"></i>
+            </div>
+            <h3>IT</h3>
+            <p>Information systems and technology</p>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="category-card">
+            <div class="category-icon">
+              <i class="fas fa-bolt"></i>
+            </div>
+            <h3>Electrical</h3>
+            <p>Power systems and electronics</p>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="category-card">
+            <div class="category-icon">
+              <i class="fas fa-building"></i>
+            </div>
+            <h3>Civil</h3>
+            <p>Infrastructure and construction</p>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="category-card">
+            <div class="category-icon">
+              <i class="fas fa-cogs"></i>
+            </div>
+            <h3>Mechanical</h3>
+            <p>Machines and mechanical systems</p>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="category-card">
+            <div class="category-icon">
+              <i class="fas fa-microchip"></i>
+            </div>
+            <h3>Electronics</h3>
+            <p>Electronic circuits and systems</p>
+          </div>
         </div>
       </div>
     </div>
@@ -691,6 +1122,53 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     });
+  </script>
+
+  <!-- Add this before the closing body tag -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const categoryFilter = document.getElementById('categoryFilter');
+      const searchFilter = document.getElementById('searchFilter');
+      const documentCards = document.querySelectorAll('.document-card');
+
+      function filterDocuments() {
+        const selectedCategory = categoryFilter.value.toLowerCase();
+        const searchTerm = searchFilter.value.toLowerCase();
+
+        documentCards.forEach(card => {
+          const cardCategory = card.dataset.category.toLowerCase();
+          const cardTitle = card.dataset.title;
+
+          const categoryMatch = !selectedCategory || cardCategory === selectedCategory;
+          const searchMatch = !searchTerm || cardTitle.includes(searchTerm);
+
+          card.style.display = categoryMatch && searchMatch ? 'block' : 'none';
+        });
+      }
+
+      categoryFilter.addEventListener('change', filterDocuments);
+      searchFilter.addEventListener('input', filterDocuments);
+    });
+  </script>
+
+  <script>
+    // Welcome Section Animation
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if it's the first visit
+      if (!localStorage.getItem('hasVisited')) {
+        const welcomeSection = document.getElementById('welcomeSection');
+        welcomeSection.classList.add('active');
+        localStorage.setItem('hasVisited', 'true');
+      }
+    });
+
+    function closeWelcome() {
+      const welcomeSection = document.getElementById('welcomeSection');
+      welcomeSection.classList.remove('active');
+      setTimeout(() => {
+        welcomeSection.style.display = 'none';
+      }, 500);
+    }
   </script>
 </body>
 </html>

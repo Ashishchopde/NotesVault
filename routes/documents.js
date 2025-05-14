@@ -24,7 +24,15 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + path.extname(file.originalname));
   }
 });
-const upload = multer({ storage });
+
+// Configure Multer with limits
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB max file size
+    fieldSize: 50 * 1024 * 1024 // 50MB max field size
+  }
+});
 
 // Home route: List all uploaded documents in Bootstrap cards.
 router.get('/', async (req, res) => {
@@ -49,15 +57,22 @@ router.get('/upload', (req, res) => {
 // POST Upload DOCX file
 router.post('/upload', upload.single('docfile'), async (req, res) => {
   try {
-    const { title } = req.body;
+    const { title, category, tags, description } = req.body;
     if (!req.file) {
       return res.status(400).send('No file uploaded.');
     }
+
+    // Process tags - split by comma and trim whitespace
+    const processedTags = tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+
     const doc = new Document({
       title: title || req.file.originalname,
       originalName: req.file.originalname,
       filePath: path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/'),
-      fileType: path.extname(req.file.originalname).toLowerCase()
+      fileType: path.extname(req.file.originalname).toLowerCase(),
+      category: category,
+      tags: processedTags,
+      description: description
     });
     await doc.save();
     res.redirect('/');
@@ -114,6 +129,10 @@ router.get('/document/:id', async (req, res) => {
         });
       }
 
+      // Increment view count
+      doc.viewCount += 1;
+      await doc.save();
+
       // Get absolute file path
       const filePath = path.join(__dirname, '..', doc.filePath);
       
@@ -149,7 +168,8 @@ router.get('/document/:id', async (req, res) => {
             pdfLink: pdfUrl,
             isPdf: true,
             error: null,
-            filename: path.basename(pdfPath)
+            filename: path.basename(pdfPath),
+            viewCount: doc.viewCount
           });
         } catch (conversionError) {
           console.error('Conversion error:', conversionError);
@@ -165,7 +185,8 @@ router.get('/document/:id', async (req, res) => {
           pdfLink: '/uploads/' + path.basename(doc.filePath),
           isPdf: true,
           error: null,
-          filename: path.basename(doc.filePath)
+          filename: path.basename(doc.filePath),
+          viewCount: doc.viewCount
         });
       } else {
         res.render('document', {

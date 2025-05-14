@@ -4,9 +4,580 @@
   <meta charset="UTF-8">
   <title>Admin Dashboard - NotesVault</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* Background Styles */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background: #000000;
+      overflow-x: hidden;
+      position: relative;
+      color: white;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Main content wrapper */
+    .main-content {
+      flex: 1 0 auto;
+      padding-bottom: 60px;
+    }
+
+    /* Blob Animation */
+    .blob-bg {
+      position: fixed;
+      top: -150px;
+      left: -150px;
+      z-index: -2;
+    }
+
+    .blob {
+      width: 500px;
+      height: 500px;
+      background: linear-gradient(135deg, #ff6ec4, #7873f5);
+      border-radius: 50%;
+      animation: blob 20s infinite ease-in-out;
+      filter: blur(120px);
+      opacity: 0.5;
+    }
+
+    @keyframes blob {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(100px, 80px) scale(1.1); }
+      66% { transform: translate(-80px, 100px) scale(0.9); }
+    }
+
+    /* Starfield Canvas */
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -3;
+      background: transparent;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+      background: transparent !important;
+      position: relative;
+      z-index: 1000;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+    }
+
+    .brand-text {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      letter-spacing: 1px;
+    }
+
+    .nav-link {
+      color: white !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-link:hover {
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    /* Admin Form Styles */
+    .admin-form {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Document Card Styles */
+    .document-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .document-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card:hover {
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-icon {
+      position: absolute;
+      top: -15px;
+      right: -15px;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #7873f5, #6c5ce7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+      z-index: 1;
+    }
+
+    .card-icon i {
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .card-body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      gap: 0.75rem;
+      position: relative;
+      z-index: 0;
+    }
+
+    .card-header-custom {
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-title {
+      color: white;
+      font-weight: 600;
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.4;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      min-height: 2.8em;
+      word-break: break-word;
+    }
+
+    .card-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .badge {
+      padding: 0.35rem 0.6rem;
+      font-size: 0.8rem;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .badge i {
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .card-date {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-date i {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: auto;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn {
+      flex: 1;
+      border-radius: 15px;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      border: none;
+      white-space: nowrap;
+    }
+
+    .btn-view {
+      background: linear-gradient(45deg, #7873f5, #6c5ce7);
+      color: white;
+    }
+
+    .btn-delete {
+      background: linear-gradient(45deg, #ff6b6b, #ee5253);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      color: white;
+    }
+
+    .btn-view:hover {
+      background: linear-gradient(45deg, #6c5ce7, #7873f5);
+    }
+
+    .btn-delete:hover {
+      background: linear-gradient(45deg, #ee5253, #ff6b6b);
+    }
+
+    /* Search Container Styles */
+    .search-container {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .search-input {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 0.75rem 1.25rem;
+      color: white;
+      width: 100%;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      line-height: 1.5;
+      height: auto;
+    }
+
+    .search-input:focus {
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(120, 115, 245, 0.3);
+    }
+
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Category Card Styles */
+    .category-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .category-card:hover {
+      transform: translateY(-10px);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .category-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #7873f5;
+      text-shadow: 0 0 10px rgba(120, 115, 245, 0.5);
+    }
+
+    .category-card h3 {
+      color: white;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .category-card p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      margin-bottom: 0;
+    }
+
+    .category-count {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.8rem;
+      color: white;
+    }
+
+    /* Section Title Styles */
+    .section-title {
+      color: white;
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(90deg, #7873f5, #ec4899);
+      border-radius: 3px;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 1200px) {
+      .card-title {
+        font-size: 0.95rem;
+      }
+      
+      .badge {
+        padding: 0.3rem 0.5rem;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .document-card {
+        margin-bottom: 1.25rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .card-body {
+        padding: 1rem;
+        gap: 0.5rem;
+      }
+
+      .card-title {
+        font-size: 0.9rem;
+        min-height: 2.6em;
+      }
+
+      .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.4rem;
+      }
+
+      .btn {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.8rem;
+      }
+
+      .card-date {
+        font-size: 0.75rem;
+      }
+
+      .card-icon {
+        width: 50px;
+        height: 50px;
+      }
+
+      .card-icon i {
+        font-size: 1.25rem;
+      }
+
+      .admin-form {
+        padding: 1.5rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .card-actions {
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .card-meta {
+        justify-content: center;
+      }
+
+      .card-date {
+        justify-content: center;
+      }
+    }
+
+    /* Category Select Styles */
+    .category-select-container {
+      position: relative;
+    }
+
+    .category-select {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 0.75rem 1.25rem;
+      color: white;
+      width: 100%;
+      transition: all 0.3s ease;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1.5;
+      height: auto;
+    }
+
+    .category-select:focus {
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(120, 115, 245, 0.3);
+    }
+
+    .category-select option {
+      background: #1a1a1a;
+      color: white;
+      padding: 12px;
+      font-size: 1rem;
+    }
+
+    .category-select-container::after {
+      content: '\f078';
+      font-family: 'Font Awesome 5 Free';
+      font-weight: 900;
+      position: absolute;
+      right: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.7);
+      pointer-events: none;
+      font-size: 0.9rem;
+    }
+
+    /* Document Management Section Styles */
+    .admin-form {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .section-title {
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 0;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -1rem;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(90deg, #7873f5, #ec4899);
+      border-radius: 3px;
+    }
+
+    .upload-btn {
+      background: linear-gradient(45deg, #7873f5, #6c5ce7);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .upload-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+      color: white;
+      text-decoration: none;
+    }
+
+    .search-filter-container {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .section-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+
+      .search-filter-container {
+        padding: 1rem;
+      }
+
+      .category-select,
+      .search-input {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <!-- Starfield -->
@@ -20,64 +591,93 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-    <div class="navbar-brand">
-      <a href="/" class="navbar-item">
-        NotesVault
+      <a class="navbar-brand" href="/">
+        <span class="brand-text">NotesVault Admin</span>
       </a>
-    </div>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <div class="search-container">
-          <input type="text" class="search-input" id="searchInput" placeholder="Search documents...">
-          <i class="fas fa-search search-icon"></i>
-        </div>
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="/admin"><i class="fas fa-user-shield"></i> Admin</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/about"><i class="fas fa-info-circle"></i> About</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </li>
-      </ul>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </li>
+        </ul>
       </div>
     </div>
   </nav>
 
   <div class="main-content">
     <div class="container mt-5">
+      <!-- Documents Section -->
       <div class="admin-form">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h2 class="mb-0">Document Management</h2>
-          <a href="/admin/upload" class="btn btn-primary">
-            <i class="fas fa-upload mr-2"></i> Upload New Document
+        <div class="section-header">
+          <h2 class="section-title">Document Management</h2>
+          <a href="/admin/upload" class="upload-btn">
+            <i class="fas fa-upload"></i> Upload New Document
           </a>
         </div>
 
-        <div class="search-container w-100 mb-4">
-          <input type="text" class="search-input w-100" id="searchInput" placeholder="Search documents...">
-          <i class="fas fa-search search-icon"></i>
+        <!-- Search and Filter Controls -->
+        <div class="search-filter-container">
+          <div class="row">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search documents...">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="category-select-container">
+                <select class="form-control category-select" id="categoryFilter">
+                  <option value="">All Categories</option>
+                  <option value="computer_science">Computer Science</option>
+                  <option value="mining">Mining</option>
+                  <option value="it">Information Technology</option>
+                  <option value="electrical">Electrical</option>
+                  <option value="civil">Civil</option>
+                  <option value="mechanical">Mechanical</option>
+                  <option value="electronics">Electronics</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="row" id="documentsContainer">
           <% documents.forEach(function(doc) { %>
-            <div class="col-md-4 document-card">
-              <div class="card">
+            <div class="col-xl-3 col-lg-4 col-md-6 mb-4 document-card" 
+                 data-category="<%= doc.category %>"
+                 data-title="<%= doc.title.toLowerCase() %>">
+              <div class="card h-100">
+                <div class="card-icon">
+                  <i class="fas fa-file-alt"></i>
+                </div>
                 <div class="card-body">
-                  <h5 class="card-title"><%= doc.title.replace('.docx', '') %></h5>
-                  <p class="card-text">Uploaded on: <%= doc.uploadedAt.toDateString() %></p>
-                  <div class="btn-group w-100">
-                    <a href="/document/<%= doc._id %>" class="btn btn-secondary">
+                  <div class="card-header-custom">
+                    <h5 class="card-title" title="<%= doc.title %>"><%= doc.title %></h5>
+                  </div>
+                  <div class="card-content">
+                    <div class="card-meta">
+                      <span class="badge badge-primary" title="Category">
+                        <i class="fas fa-folder"></i> <%= doc.category %>
+                      </span>
+                      <span class="badge badge-info" title="Views">
+                        <i class="fas fa-eye"></i> <%= doc.viewCount || 0 %>
+                      </span>
+                    </div>
+                    <div class="card-date">
+                      <i class="fas fa-calendar-alt"></i>
+                      <span><%= new Date(doc.uploadedAt).toLocaleDateString() %></span>
+                    </div>
+                  </div>
+                  <div class="card-actions">
+                    <a href="/document/<%= doc._id %>" class="btn btn-view" title="View Document">
                       <i class="fas fa-eye"></i> View
                     </a>
-                    <button class="btn btn-danger delete-btn" data-id="<%= doc._id %>">
+                    <button class="btn btn-delete delete-btn" data-id="<%= doc._id %>" title="Delete Document">
                       <i class="fas fa-trash-alt"></i> Delete
                     </button>
                   </div>
@@ -101,209 +701,13 @@
     </div>
   </footer>
 
-  <style>
-    /* Background Styles */
-    body {
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      font-family: 'Segoe UI', sans-serif;
-      background: #000000;
-      overflow-x: hidden;
-      position: relative;
-      color: white;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Main content wrapper */
-    .main-content {
-      flex: 1 0 auto;
-      padding-bottom: 60px; /* Add padding to prevent footer overlap */
-    }
-
-    /* Card styles */
-    .card {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 15px;
-      transition: all 0.3s ease;
-      margin-bottom: 20px;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      color: white;
-      height: 100%; /* Make all cards same height */
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Add responsive spacing between cards */
-    .document-card {
-      margin-bottom: 30px; /* Increased spacing between cards */
-    }
-
-    @media (max-width: 768px) {
-      .document-card {
-        margin-bottom: 40px; /* Even more spacing on mobile */
-      }
-    }
-
-    .card-body {
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1; /* Make card body take remaining space */
-    }
-
-    .card-title {
-      color: white;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 2; /* Limit to 2 lines */
-      -webkit-box-orient: vertical;
-      min-height: 48px; /* Fixed height for title */
-    }
-
-    .card-text {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-    }
-
-    .btn-group {
-      margin-top: auto; /* Push buttons to bottom */
-    }
-
-    .btn-secondary, .btn-danger {
-      border: none;
-      border-radius: 25px;
-      padding: 8px 20px;
-      transition: all 0.3s ease;
-      color: white;
-      flex: 1; /* Make buttons take equal space */
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-    }
-
-    .btn-secondary {
-      background: linear-gradient(45deg, #6c5ce7, #a29bfe);
-    }
-
-    .btn-danger {
-      background: linear-gradient(45deg, #ff4757, #ff6b81);
-    }
-
-    .btn-secondary:hover, .btn-danger:hover {
-      transform: scale(1.05);
-      color: white;
-    }
-
-    .btn-secondary:hover {
-      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
-    }
-
-    .btn-danger:hover {
-      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
-    }
-
-    /* Search bar styles */
-    .search-container {
-      position: relative;
-      margin-bottom: 20px;
-    }
-
-    .search-input {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 25px;
-      padding: 8px 20px;
-      color: white;
-      width: 100%;
-      transition: all 0.3s ease;
-    }
-
-    .search-input:focus {
-      background: rgba(255, 255, 255, 0.15);
-      outline: none;
-      color: white;
-    }
-
-    .search-input::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    .search-icon {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    /* Footer Styles */
-    .footer {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      position: relative;
-      z-index: 1000;
-      margin-top: auto;
-      width: 100%;
-      flex-shrink: 0;
-    }
-
-    .footer p {
-      font-size: 0.9rem;
-    }
-
-    .footer .fa-heart {
-      animation: heartbeat 1.5s infinite;
-    }
-
-    @keyframes heartbeat {
-      0% { transform: scale(1); }
-      14% { transform: scale(1.3); }
-      28% { transform: scale(1); }
-      42% { transform: scale(1.3); }
-      70% { transform: scale(1); }
-    }
-
-    /* Navbar brand styles */
-    .navbar-brand {
-      display: flex;
-      align-items: center;
-      flex-direction: row-reverse; /* Reverse the order of elements */
-    }
-
-    .navbar-brand img {
-      height: 40px;
-      width: auto;
-      margin-right: 0; /* Remove right margin */
-      margin-left: 0; /* Remove left margin */
-    }
-
-    .brand-text {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: white;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-      letter-spacing: 1px;
-    }
-  </style>
-
   <!-- Bootstrap JS and dependencies -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-  <!-- Starfield Animation Script -->
   <script>
+    // Starfield Animation
     const canvas = document.getElementById('starfield');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -334,27 +738,41 @@
 
     animate();
 
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('input', function(e) {
-      const searchTerm = e.target.value.toLowerCase();
-      const cards = document.querySelectorAll('.document-card');
-      
-      cards.forEach(card => {
-        const title = card.querySelector('.card-title').textContent.toLowerCase();
-        if (title.includes(searchTerm)) {
-          card.style.display = '';
-        } else {
-          card.style.display = 'none';
-        }
-      });
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     });
+
+    // Search and Filter functionality
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const documentCards = document.querySelectorAll('.document-card');
+
+    function filterDocuments() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const selectedCategory = categoryFilter.value.toLowerCase();
+
+      documentCards.forEach(card => {
+        const title = card.dataset.title;
+        const category = card.dataset.category.toLowerCase();
+        
+        const matchesSearch = title.includes(searchTerm);
+        const matchesCategory = !selectedCategory || category === selectedCategory;
+
+        card.style.display = matchesSearch && matchesCategory ? '' : 'none';
+      });
+    }
+
+    searchInput.addEventListener('input', filterDocuments);
+    categoryFilter.addEventListener('change', filterDocuments);
 
     // Delete functionality
     document.querySelectorAll('.delete-btn').forEach(button => {
       button.addEventListener('click', function() {
         const docId = this.getAttribute('data-id');
         if (confirm('Are you sure you want to delete this document?')) {
-          fetch(`/document/${docId}`, {
+          fetch(`/admin/document/${docId}`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json'
@@ -373,12 +791,6 @@
           });
         }
       });
-    });
-
-    // Handle window resize
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
     });
   </script>
 </body>

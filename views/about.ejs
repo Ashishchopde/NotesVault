@@ -8,21 +8,62 @@
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/css/style.css">
   <style>
-    /* Navbar brand styles */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background: #000000;
+      overflow-x: hidden;
+      position: relative;
+      color: white;
+    }
+
+    /* Blob Animation */
+    .blob-bg {
+      position: fixed;
+      top: -150px;
+      left: -150px;
+      z-index: -2;
+    }
+
+    .blob {
+      width: 500px;
+      height: 500px;
+      background: linear-gradient(135deg, #ff6ec4, #7873f5);
+      border-radius: 50%;
+      animation: blob 20s infinite ease-in-out;
+      filter: blur(120px);
+      opacity: 0.5;
+    }
+
+    @keyframes blob {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(100px, 80px) scale(1.1); }
+      66% { transform: translate(-80px, 100px) scale(0.9); }
+    }
+
+    /* Starfield Canvas */
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -3;
+      background: transparent;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+      background: transparent !important;
+      position: relative;
+      z-index: 1000;
+    }
+
     .navbar-brand {
       display: flex;
       align-items: center;
-      flex-direction: row-reverse;
-    }
-
-    .navbar-brand img {
-      height: 40px;
-      width: auto;
-      margin-right: 0;
-      margin-left: 0;
     }
 
     .brand-text {
@@ -33,153 +74,195 @@
       letter-spacing: 1px;
     }
 
-    /* About section styles */
+    .nav-link {
+      color: white !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-link:hover {
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    /* About Section Styles */
     .about-section {
-      padding: 2rem 0;
-    }
-
-    .about-card {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 15px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .about-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      padding: 80px 0;
+      position: relative;
+      z-index: 1;
     }
 
     .about-header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 60px;
     }
 
-    .about-header h1 {
-      font-size: 2.2rem;
-      font-weight: bold;
-      color: white;
-      margin-bottom: 0.8rem;
-      text-shadow: 0 0 15px rgba(120, 115, 245, 0.5);
+    .about-title {
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #7873f5, #ff6ec4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
     }
 
-    .about-header p {
+    .about-subtitle {
+      font-size: 1.2rem;
       color: rgba(255, 255, 255, 0.8);
-      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 30px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      height: 100%;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
 
     .feature-icon {
       font-size: 2rem;
-      margin-bottom: 1rem;
-      color: #7873f5;
-      text-shadow: 0 0 10px rgba(120, 115, 245, 0.5);
+      margin-bottom: 15px;
+      background: linear-gradient(45deg, #7873f5, #ff6ec4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .feature-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: white;
+    }
+
+    .feature-description {
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.5;
+      font-size: 0.95rem;
     }
 
     .team-section {
-      background: rgba(255, 255, 255, 0.05);
+      padding: 60px 0;
+      text-align: center;
+    }
+
+    .team-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 30px;
+      background: linear-gradient(45deg, #7873f5, #ff6ec4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .team-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 15px;
-      padding: 2rem;
-      margin-top: 3rem;
+      padding: 25px;
+      margin-bottom: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .team-card:hover {
+      transform: translateY(-3px);
     }
 
     .team-header {
-      text-align: center;
-      margin-bottom: 2rem;
-      cursor: pointer;
-      padding: 1rem;
-      border-radius: 10px;
-      transition: background-color 0.3s ease;
+      margin-bottom: 20px;
     }
 
-    .team-header:hover {
-      background: rgba(255, 255, 255, 0.1);
+    .team-header h4 {
+      color: white;
+      font-size: 1.2rem;
+      margin-bottom: 5px;
     }
 
-    .team-content {
-      display: none;
-      padding: 1rem;
-    }
-
-    .team-content.active {
-      display: block;
-      animation: fadeIn 0.5s ease;
+    .team-header p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      margin-bottom: 0;
     }
 
     .team-member {
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      margin-bottom: 0.5rem;
-      transition: transform 0.2s ease, background-color 0.2s ease;
       display: flex;
       align-items: center;
+      padding: 8px 15px;
+      margin: 5px 0;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
     }
 
     .team-member:hover {
-      transform: translateX(10px);
       background: rgba(255, 255, 255, 0.1);
     }
 
     .team-member i {
       color: #7873f5;
-      margin-right: 1rem;
+      margin-right: 10px;
+      font-size: 0.9rem;
+    }
+
+    .team-member span {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.9rem;
     }
 
     .contact-section {
+      padding: 60px 0;
       text-align: center;
-      margin-top: 3rem;
     }
 
-    .contact-icon {
-      font-size: 2rem;
+    .contact-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 40px;
+      background: linear-gradient(45deg, #7873f5, #ff6ec4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .contact-info {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      padding: 30px;
+      margin-top: 30px;
+    }
+
+    .contact-item {
+      margin: 20px 0;
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .contact-item i {
+      margin-right: 10px;
       color: #7873f5;
-      margin-bottom: 1rem;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @media (max-width: 768px) {
+      .about-title {
+        font-size: 2.5rem;
+      }
 
-    .rotate-icon {
-      transition: transform 0.3s ease;
-    }
+      .about-subtitle {
+        font-size: 1rem;
+        padding: 0 20px;
+      }
 
-    .rotate-icon.active {
-      transform: rotate(180deg);
-    }
-
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .feature-item {
-      text-align: center;
-      padding: 1.2rem;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-      transition: transform 0.3s ease;
-    }
-
-    .feature-item:hover {
-      transform: translateY(-3px);
-    }
-
-    .feature-item h3 {
-      font-size: 1.2rem;
-      margin: 0.5rem 0;
-      font-weight: 600;
-    }
-
-    .feature-item p {
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.8);
-      margin-bottom: 0;
+      .feature-card {
+        margin: 0 15px 30px 15px;
+      }
     }
   </style>
 </head>
@@ -195,149 +278,151 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-    <div class="navbar-brand">
-      <a href="/" class="navbar-item">
-        NotesVault
+      <a class="navbar-brand" href="/">
+        <span class="brand-text">NotesVault</span>
       </a>
-    </div>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <div class="search-container">
-          <input type="text" class="search-input" id="searchInput" placeholder="Search documents...">
-          <i class="fas fa-search search-icon"></i>
-        </div>
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/admin"><i class="fas fa-user-shield"></i> Admin</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link" href="/about"><i class="fas fa-info-circle"></i> About</a>
-        </li>
-      </ul>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/"><i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin"><i class="fas fa-user-shield"></i> Admin</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/about"><i class="fas fa-info-circle"></i> About</a>
+          </li>
+        </ul>
       </div>
     </div>
   </nav>
 
-  <div class="container about-section">
-    <!-- About Header -->
-    <div class="about-header">
-      <h1>Welcome to NotesVault</h1>
-      <p>Your secure platform for managing and accessing educational documents</p>
-    </div>
-
-    <!-- Features Grid -->
-    <div class="about-card">
-      <div class="feature-grid">
-        <div class="feature-item">
-          <i class="fas fa-shield-alt feature-icon"></i>
-          <h3>Secure Storage</h3>
-          <p>Your documents are stored with enterprise-level security</p>
-        </div>
-        <div class="feature-item">
-          <i class="fas fa-search feature-icon"></i>
-          <h3>Smart Search</h3>
-          <p>Find documents quickly with our powerful search feature</p>
-        </div>
-        <div class="feature-item">
-          <i class="fas fa-file-pdf feature-icon"></i>
-          <h3>Format Support</h3>
-          <p>Support for DOCX and PDF file formats</p>
-        </div>
-        <div class="feature-item">
-          <i class="fas fa-mobile-alt feature-icon"></i>
-          <h3>Responsive Design</h3>
-          <p>Access your documents on any device</p>
-        </div>
+  <!-- About Section -->
+  <section class="about-section">
+    <div class="container">
+      <div class="about-header">
+        <h1 class="about-title">About NotesVault</h1>
+        <p class="about-subtitle">A secure platform for managing and accessing educational documents across engineering disciplines.</p>
       </div>
-    </div>
 
-    <!-- Team Section -->
-    <div class="about-card team-section">
-      <div class="team-header" id="teamHeader">
-        <h2>Meet Our Team <i class="fas fa-chevron-down rotate-icon"></i></h2>
-        <p>The minds behind NotesVault</p>
-      </div>
-      <div class="team-content" id="teamContent">
-        <div class="text-center mb-4">
-          <h4>Computer Science & Engineering</h4>
-          <p>Government Polytechnic College Khirsadoh<br>Final Year Batch 2022-25</p>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="team-member">
-              <i class="fas fa-user-graduate"></i>
-              <span>VIKAS KUMAR (22023C04055)</span>
-            </div>
-            <div class="team-member">
-              <i class="fas fa-user-graduate"></i>
-              <span>Piyush Thakre (22023C04046)</span>
-            </div>
-            <div class="team-member">
-              <i class="fas fa-user-graduate"></i>
-              <span>Devansh Pawar (22023C04019)</span>
-            </div>
-            <div class="team-member">
-              <i class="fas fa-user-graduate"></i>
-              <span>Ashish Chopde (22023C04009)</span>
-            </div>
-            <div class="team-member">
-              <i class="fas fa-user-graduate"></i>
-              <span>Vishesh Indorkar (22023C04066)</span>
-            </div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="feature-card">
+            <i class="fas fa-book-open feature-icon"></i>
+            <h3 class="feature-title">Document Collection</h3>
+            <p class="feature-description">Access study materials across multiple engineering disciplines, from Computer Science to Mechanical Engineering.</p>
           </div>
-          <div class="col-md-6">
-            <div class="team-member">
-              <i class="fas fa-user-graduate"></i>
-              <span>Mohit Pandram (22023C04039)</span>
-            </div>
-            <div class="team-member">
-              <i class="fas fa-user-graduate"></i>
-              <span>ASHISH YADAV (22023C04010)</span>
-            </div>
-            <div class="team-member">
-              <i class="fas fa-user-graduate"></i>
-              <span>Mayank pathare (22023C04036)</span>
-            </div>
-            <div class="team-member">
-              <i class="fas fa-user-graduate"></i>
-              <span>Harsh Verma (22023C04026)</span>
-            </div>
-            <div class="team-member">
-              <i class="fas fa-user-graduate"></i>
-              <span>Karan (22023C04028)</span>
-            </div>
-            <div class="team-member">
-              <i class="fas fa-user-graduate"></i>
-              <span>Ajit sherke (23023C04201)</span>
-            </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <i class="fas fa-search feature-icon"></i>
+            <h3 class="feature-title">Easy Access</h3>
+            <p class="feature-description">Quickly find documents with our intuitive search and category-based organization system.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <i class="fas fa-shield-alt feature-icon"></i>
+            <h3 class="feature-title">Secure Platform</h3>
+            <p class="feature-description">Your documents are safely stored and accessible only to authorized users.</p>
           </div>
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- Contact Section -->
-    <div class="about-card contact-section">
-      <i class="fas fa-envelope contact-icon"></i>
-      <h2>Get in Touch</h2>
-      <p>Have questions or suggestions? We'd love to hear from you!</p>
-      <p class="mt-3">
-        <i class="fas fa-envelope-open-text mr-2"></i>
-        support@notesvault.com
-      </p>
+  <!-- Team Section -->
+  <section class="team-section">
+    <div class="container">
+      <h2 class="team-title">Our Team</h2>
+      <div class="row">
+        <div class="col-md-8 mx-auto">
+          <div class="team-card">
+            <div class="team-header">
+              <h4>Computer Science & Engineering</h4>
+              <p>Government Polytechnic College Khirsadoh<br>Final Year Batch 2022-25</p>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="team-member">
+                  <i class="fas fa-user-graduate"></i>
+                  <span>VIKAS KUMAR (22023C04055)</span>
+                </div>
+                <div class="team-member">
+                  <i class="fas fa-user-graduate"></i>
+                  <span>Piyush Thakre (22023C04046)</span>
+                </div>
+                <div class="team-member">
+                  <i class="fas fa-user-graduate"></i>
+                  <span>Devansh Pawar (22023C04019)</span>
+                </div>
+                <div class="team-member">
+                  <i class="fas fa-user-graduate"></i>
+                  <span>Ashish Chopde (22023C04009)</span>
+                </div>
+                <div class="team-member">
+                  <i class="fas fa-user-graduate"></i>
+                  <span>Vishesh Indorkar (22023C04066)</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="team-member">
+                  <i class="fas fa-user-graduate"></i>
+                  <span>Mohit Pandram (22023C04039)</span>
+                </div>
+                <div class="team-member">
+                  <i class="fas fa-user-graduate"></i>
+                  <span>ASHISH YADAV (22023C04010)</span>
+                </div>
+                <div class="team-member">
+                  <i class="fas fa-user-graduate"></i>
+                  <span>Mayank pathare (22023C04036)</span>
+                </div>
+                <div class="team-member">
+                  <i class="fas fa-user-graduate"></i>
+                  <span>Harsh Verma (22023C04026)</span>
+                </div>
+                <div class="team-member">
+                  <i class="fas fa-user-graduate"></i>
+                  <span>Karan (22023C04028)</span>
+                </div>
+                <div class="team-member">
+                  <i class="fas fa-user-graduate"></i>
+                  <span>Ajit sherke (23023C04201)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact-section">
+    <div class="container">
+      <h2 class="contact-title">Contact Us</h2>
+      <div class="contact-info">
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <span>support@notesvault.com</span>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Government Polytechnic College Khirsadoh</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Bootstrap JS and dependencies -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-  <!-- Custom Scripts -->
   <script>
     // Starfield Animation
     const canvas = document.getElementById('starfield');
@@ -369,14 +454,6 @@
     }
 
     animate();
-
-    // Team Section Toggle
-    document.getElementById('teamHeader').addEventListener('click', function() {
-      const content = document.getElementById('teamContent');
-      const icon = this.querySelector('.rotate-icon');
-      content.classList.toggle('active');
-      icon.classList.toggle('active');
-    });
 
     // Handle window resize
     window.addEventListener('resize', () => {

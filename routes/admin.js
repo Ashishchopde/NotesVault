@@ -30,7 +30,15 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + path.extname(file.originalname));
   }
 });
-const upload = multer({ storage });
+
+// Configure Multer with limits
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB max file size
+    fieldSize: 50 * 1024 * 1024 // 50MB max field size
+  }
+});
 
 // Admin login page
 router.get('/admin', (req, res) => {
@@ -76,15 +84,20 @@ router.get('/admin/upload', isAuthenticated, (req, res) => {
 // Admin upload handler
 router.post('/admin/upload', isAuthenticated, upload.single('docfile'), async (req, res) => {
   try {
-    const { title } = req.body;
+    const { title, category } = req.body;
     if (!req.file) {
       return res.status(400).send('No file uploaded.');
     }
+
+    // Set default category if not provided
+    const documentCategory = category || 'uncategorized';
+
     const doc = new document({
       title: title || req.file.originalname,
       originalName: req.file.originalname,
       filePath: path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/'),
-      fileType: path.extname(req.file.originalname).toLowerCase()
+      fileType: path.extname(req.file.originalname).toLowerCase(),
+      category: documentCategory
     });
     await doc.save();
     res.redirect('/admin/dashboard');
