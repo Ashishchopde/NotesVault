@@ -57,7 +57,11 @@ body {
 }
 
 .navbar-toggler {
-  display: none; /* Hide toggler by default */
+  border-color: rgba(255,255,255,0.5);
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 0.8)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
 
 .navbar-collapse {
@@ -72,37 +76,52 @@ body {
   margin: 0;
 }
 
-.navbar-brand a {
-  color: #ffffff;
+/* Unified base for .nav-link and .brand-text */
+.navbar-brand a, .brand-text, .nav-link {
+  color: white; /* Default to white */
   text-decoration: none;
   font-family: 'Poppins', sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.5rem; /* Base for brand */
   font-weight: 600;
   letter-spacing: 1px;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-  transition: all 0.3s ease;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); /* Base shadow for brand */
 }
 
-.navbar-brand a:hover {
-  color: #ffffff;
+.navbar-brand a, .brand-text { /* Specific transitions for brand */
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.navbar-brand a:hover, .brand-text:hover {
+  color: white;
   text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
-.navbar-nav {
-  align-items: center;
-}
-
+/* Specifics for .nav-link (desktop/base) */
 .nav-link {
-  padding: 0.5rem 1rem;
+  font-family: 'Segoe UI', sans-serif;
   font-size: 1rem;
+  padding: 0.5rem 1rem;
   display: flex;
   align-items: center;
-  color: white !important;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.nav-link:hover {
+.navbar-nav .nav-link {
   color: rgba(255, 255, 255, 0.8) !important;
+  padding: 8px 16px;
+  border-radius: 20px;
+  /* Specific transitions for desktop nav link interactions */
+  transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-link:hover { /* General hover for nav-links NOT in .navbar-nav for desktop - e.g. if used elsewhere */
+  color: rgba(255, 255, 255, 0.8) !important; /* Keep this simple, or define specific transition if needed */
+}
+
+.navbar-nav .nav-link:hover { /* Desktop hover for nav-links in .navbar-nav */
+  color: white !important;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
 }
 
 .nav-link i {
@@ -151,19 +170,6 @@ body {
 /* Enhanced Navbar Items */
 .navbar-nav .nav-item {
   margin: 0 5px;
-}
-
-.navbar-nav .nav-link {
-  color: rgba(255, 255, 255, 0.8) !important;
-  padding: 8px 16px;
-  border-radius: 20px;
-  transition: all 0.3s ease;
-}
-
-.navbar-nav .nav-link:hover {
-  color: white !important;
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
 }
 
 /* Container and Content Styles */
@@ -316,30 +322,67 @@ body {
     padding: 0.5rem 1rem;
   }
 
-  .navbar-brand img {
-    height: 35px;
+  .navbar-brand a, .brand-text {
+    font-size: 1.3rem;
+    transition: none; /* Disable brand transitions on mobile if not needed */
   }
 
   .navbar-collapse {
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(5px);
-    padding: 1rem;
-    border-radius: 10px;
-    margin-top: 1rem;
+    background: transparent; /* Remove distinct background */
+    backdrop-filter: none; /* Remove blur */
+    padding: 0.5rem 0; /* Vertical padding for the container */
+    border-radius: 0; /* No border radius if it's transparent */
+    margin-top: 0.25rem; /* Small gap from navbar */
+    width: 100%;
+    border: none; /* Remove border */
+  }
+
+  /* Disable transitions on nav-links during collapse animation */
+  .navbar-collapse.collapsing .nav-link,
+  .navbar-collapse.collapsing .navbar-nav .nav-link {
+    transition: none !important;
   }
 
   .navbar-nav {
-    padding: 0.5rem 0;
+    padding: 0; /* Remove padding if items will have their own */
+    width: 100%;
   }
 
-  .nav-link {
-    padding: 0.75rem 1rem;
-    border-radius: 5px;
-    margin: 0.25rem 0;
+  .navbar-nav .nav-item {
+    width: 100%;
+    margin: 0; /* No margin if nav-link has enough padding */
   }
 
-  .nav-link:hover {
-    background: rgba(255, 255, 255, 0.1);
+  .nav-link, .navbar-nav .nav-link /* Target all nav links in mobile */ {
+    padding: 0.8rem 1.5rem;
+    border-radius: 0;
+    justify-content: flex-start;
+    width: 100%;
+    color: white !important;
+    font-size: 1rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+    transition: none; /* REMOVE base transition from mobile nav-links */
+  }
+
+  .navbar-nav .nav-link:hover {
+    background: transparent !important;
+    color: #7873f5 !important;
+    transform: none;
+    transition: color 0.2s ease-in-out; /* APPLY transition ONLY for hover color change */
+  }
+
+  .navbar-toggler {
+    display: block !important;
+    margin-left: auto;
+  }
+
+  .navbar-collapse {
+    display: none !important;
+  }
+
+  .navbar-collapse.show {
+    display: flex !important;
+    flex-direction: column;
   }
 
   .container {
@@ -391,23 +434,11 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-
-  .navbar-toggler {
-    display: block;
-  }
-
-  .navbar-collapse {
-    display: none !important;
-  }
-
-  .navbar-collapse.show {
-    display: block !important;
-  }
 }
 
 @media (max-width: 575.98px) {
-  .navbar-brand img {
-    height: 30px;
+  .navbar-brand a, .brand-text {
+    font-size: 1.2rem;
   }
 
   .content-container {

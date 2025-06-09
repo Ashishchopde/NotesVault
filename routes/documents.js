@@ -133,8 +133,11 @@ router.get('/document/:id', async (req, res) => {
       doc.viewCount += 1;
       await doc.save();
 
+      console.log(`[View Document] Document found in DB: ID=${doc._id}, Stored filePath='${doc.filePath}'`);
+
       // Get absolute file path
       const filePath = path.join(__dirname, '..', doc.filePath);
+      console.log(`[View Document] Constructed absolute filePath for fs.existsSync: '${filePath}'`);
       
       // Check if file exists
       if (!fs.existsSync(filePath)) {
@@ -180,9 +183,11 @@ router.get('/document/:id', async (req, res) => {
           });
         }
       } else if (doc.fileType === '.pdf') {
+        // For PDF files, use the stored filePath directly
+        const pdfUrl = '/' + doc.filePath.replace(/\\/g, '/');
         res.render(isMobile ? 'mobile-pdf' : 'document', { 
           title: doc.title, 
-          pdfLink: '/uploads/' + path.basename(doc.filePath),
+          pdfLink: pdfUrl,
           isPdf: true,
           error: null,
           filename: path.basename(doc.filePath),
