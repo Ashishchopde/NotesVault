@@ -7,12 +7,14 @@ const adminRoutes = require('./routes/admin');
 const multer = require('multer');
 const fs = require('fs');
 const { spawn } = require('child_process');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://Ashish:admin123@cluster0.m3afff9.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
