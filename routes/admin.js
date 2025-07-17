@@ -92,14 +92,21 @@ router.post('/admin/upload', isAuthenticated, upload.single('docfile'), async (r
     // Set default category if not provided
     const documentCategory = category || 'uncategorized';
 
+    // Read file as buffer
+    const fileBuffer = fs.readFileSync(req.file.path);
+
     const doc = new document({
       title: title || req.file.originalname,
       originalName: req.file.originalname,
+      // filePath is kept for migration/legacy reference, but not used for serving
       filePath: path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/'),
       fileType: path.extname(req.file.originalname).toLowerCase(),
-      category: documentCategory
+      category: documentCategory,
+      fileData: fileBuffer
     });
     await doc.save();
+    // Optionally, delete the file from disk after saving to DB
+    fs.unlinkSync(req.file.path);
     res.redirect('/admin/dashboard');
   } catch (err) {
     console.error('Upload error:', err);

@@ -5,6 +5,7 @@ const documentSchema = new mongoose.Schema({
   originalName: { type: String, required: true },
   filePath: { type: String, required: true },
   fileType: { type: String, required: true },
+  fileData: { type: Buffer },
   uploadedAt: { type: Date, default: Date.now },
   category: { type: String, required: true },
   isCustomCategory: { type: Boolean, default: false },

@@ -65,16 +65,23 @@ router.post('/upload', upload.single('docfile'), async (req, res) => {
     // Process tags - split by comma and trim whitespace
     const processedTags = tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
 
+    // Read file as buffer
+    const fileBuffer = fs.readFileSync(req.file.path);
+
     const doc = new Document({
       title: title || req.file.originalname,
       originalName: req.file.originalname,
+      // filePath is kept for migration/legacy reference, but not used for serving
       filePath: path.relative(path.join(__dirname, '..'), req.file.path).replace(/\\/g, '/'),
       fileType: path.extname(req.file.originalname).toLowerCase(),
       category: category,
       tags: processedTags,
-      description: description
+      description: description,
+      fileData: fileBuffer
     });
     await doc.save();
+    // Optionally, delete the file from disk after saving to DB
+    fs.unlinkSync(req.file.path);
     res.redirect('/');
   } catch (err) {
     console.error('Upload error:', err);
@@ -119,95 +126,63 @@ async function convertDocxToPdf(docxPath, pdfPath) {
 
 // View full document
 router.get('/document/:id', async (req, res) => {
-    try {
-      const doc = await Document.findById(req.params.id);
-      if (!doc) {
-        return res.render('document', {
-          title: 'Document Not Found',
-          error: 'Document not found.',
-          isPdf: false
-        });
-      }
-
-      // Increment view count
-      doc.viewCount += 1;
-      await doc.save();
-
-      console.log(`[View Document] Document found in DB: ID=${doc._id}, Stored filePath='${doc.filePath}'`);
-
-      // Get absolute file path
-      const filePath = path.join(__dirname, '..', doc.filePath);
-      console.log(`[View Document] Constructed absolute filePath for fs.existsSync: '${filePath}'`);
-      
-      // Check if file exists
-      if (!fs.existsSync(filePath)) {
-        console.error('File not found at path:', filePath);
-        return res.render('document', {
-          title: doc.title,
-          error: 'File not found on server.',
-          isPdf: false
-        });
-      }
-
-      // Check if the request is from a mobile device
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(req.headers['user-agent']);
-
-      if (doc.fileType === '.docx') {
-        try {
-          // Create PDF path
-          const pdfPath = filePath.replace('.docx', '.pdf');
-          
-          // Convert DOCX to PDF if PDF doesn't exist
-          if (!fs.existsSync(pdfPath)) {
-            await convertDocxToPdf(filePath, pdfPath);
-          }
-
-          // Get relative PDF path for URL
-          const relativePdfPath = path.relative(path.join(__dirname, '..'), pdfPath).replace(/\\/g, '/');
-          const pdfUrl = '/' + relativePdfPath;
-
-          res.render(isMobile ? 'mobile-pdf' : 'document', { 
-            title: doc.title, 
-            pdfLink: pdfUrl,
-            isPdf: true,
-            error: null,
-            filename: path.basename(pdfPath),
-            viewCount: doc.viewCount
-          });
-        } catch (conversionError) {
-          console.error('Conversion error:', conversionError);
-          res.render('document', {
-            title: doc.title,
-            error: 'Error converting document: ' + conversionError.message,
-            isPdf: false
-          });
-        }
-      } else if (doc.fileType === '.pdf') {
-        // For PDF files, use the stored filePath directly
-        const pdfUrl = '/' + doc.filePath.replace(/\\/g, '/');
-        res.render(isMobile ? 'mobile-pdf' : 'document', { 
-          title: doc.title, 
-          pdfLink: pdfUrl,
-          isPdf: true,
-          error: null,
-          filename: path.basename(doc.filePath),
-          viewCount: doc.viewCount
-        });
-      } else {
-        res.render('document', {
-          title: doc.title,
-          error: 'Unsupported file type: ' + doc.fileType,
-          isPdf: false
-        });
-      }
-    } catch (err) {
-      console.error('Error in document route:', err);
-      res.render('document', {
-        title: 'Error',
-        error: 'Error retrieving document: ' + err.message,
+  try {
+    const doc = await Document.findById(req.params.id);
+    if (!doc) {
+      return res.render('document', {
+        title: 'Document Not Found',
+        error: 'Document not found.',
         isPdf: false
       });
     }
+
+    // Increment view count
+    doc.viewCount += 1;
+    await doc.save();
+
+    // Check if the request is from a mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(req.headers['user-agent']);
+
+    if (doc.fileType === '.pdf') {
+      // Serve PDF from buffer
+      res.contentType('application/pdf');
+      res.send(doc.fileData);
+    } else if (doc.fileType === '.docx') {
+      // Convert DOCX buffer to PDF and serve
+      const tmp = require('tmp');
+      const tmpDocx = tmp.tmpNameSync({ postfix: '.docx' });
+      const tmpPdf = tmp.tmpNameSync({ postfix: '.pdf' });
+      fs.writeFileSync(tmpDocx, doc.fileData);
+      try {
+        await convertDocxToPdf(tmpDocx, tmpPdf);
+        const pdfBuffer = fs.readFileSync(tmpPdf);
+        res.contentType('application/pdf');
+        res.send(pdfBuffer);
+        fs.unlinkSync(tmpDocx);
+        fs.unlinkSync(tmpPdf);
+      } catch (conversionError) {
+        if (fs.existsSync(tmpDocx)) fs.unlinkSync(tmpDocx);
+        if (fs.existsSync(tmpPdf)) fs.unlinkSync(tmpPdf);
+        res.render('document', {
+          title: doc.title,
+          error: 'Error converting document: ' + conversionError.message,
+          isPdf: false
+        });
+      }
+    } else {
+      res.render('document', {
+        title: doc.title,
+        error: 'Unsupported file type: ' + doc.fileType,
+        isPdf: false
+      });
+    }
+  } catch (err) {
+    res.render('document', {
+      title: 'Error',
+      error: 'Error retrieving document: ' + err.message,
+      isPdf: false
+    });
+  }
 });
 
 // Download document
@@ -218,33 +193,33 @@ router.get('/download/:id', async (req, res) => {
       return res.status(404).send('Document not found');
     }
 
-    const filePath = path.join(__dirname, '..', doc.filePath);
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).send('File not found');
-    }
-
-    if (doc.fileType === '.docx') {
-      // Convert DOCX to PDF for download
-      const pdfPath = filePath.replace('.docx', '.pdf');
-      
-      // Convert if PDF doesn't exist
-      if (!fs.existsSync(pdfPath)) {
-        try {
-          await convertDocxToPdf(filePath, pdfPath);
-        } catch (error) {
-          console.error('Conversion error:', error);
-          return res.status(500).send('Error converting document to PDF');
-        }
+    if (doc.fileType === '.pdf') {
+      res.contentType('application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${doc.title}"`);
+      res.send(doc.fileData);
+    } else if (doc.fileType === '.docx') {
+      // Convert DOCX buffer to PDF and serve
+      const tmp = require('tmp');
+      const tmpDocx = tmp.tmpNameSync({ postfix: '.docx' });
+      const tmpPdf = tmp.tmpNameSync({ postfix: '.pdf' });
+      fs.writeFileSync(tmpDocx, doc.fileData);
+      try {
+        await convertDocxToPdf(tmpDocx, tmpPdf);
+        const pdfBuffer = fs.readFileSync(tmpPdf);
+        res.contentType('application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=\"${doc.title.replace('.docx', '')}.pdf\"`);
+        res.send(pdfBuffer);
+        fs.unlinkSync(tmpDocx);
+        fs.unlinkSync(tmpPdf);
+      } catch (error) {
+        if (fs.existsSync(tmpDocx)) fs.unlinkSync(tmpDocx);
+        if (fs.existsSync(tmpPdf)) fs.unlinkSync(tmpPdf);
+        return res.status(500).send('Error converting document to PDF');
       }
-
-      // Send the PDF file
-      res.download(pdfPath, `${doc.title.replace('.docx', '')}.pdf`);
     } else {
-      // For PDF files, send directly
-      res.download(filePath, doc.title);
+      return res.status(400).send('Unsupported file type');
     }
   } catch (err) {
-    console.error('Download error:', err);
     res.status(500).send('Error downloading document');
   }
 });

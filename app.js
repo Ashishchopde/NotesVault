@@ -13,8 +13,24 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Ensure NODE_ENV is set to production in production
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'production';
+}
+
+// Trust proxy for Render/Heroku
+app.set('trust proxy', 1);
+
+// Check required environment variables
+if (!process.env.MONGODB_URI) {
+  throw new Error('MONGODB_URI environment variable is required');
+}
+if (!process.env.ADMIN_PASSWORD) {
+  throw new Error('ADMIN_PASSWORD environment variable is required');
+}
+
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://Ashish:admin123@cluster0.m3afff9.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
